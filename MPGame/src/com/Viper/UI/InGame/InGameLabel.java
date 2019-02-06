@@ -90,7 +90,7 @@ public class InGameLabel extends JLabel{
 		int x = getWidth() / 2;
 		int y = getHeight() / 2;
 		
-		
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		
 		g2d.rotate(_VehicleLogic.getAngle(), x, y);
         

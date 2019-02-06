@@ -161,7 +161,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 			e.printStackTrace();
 		}
 		
-		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		
 		int cx = i.getWidth(null) / 2;
 		int cy = i.getHeight(null) / 2;
