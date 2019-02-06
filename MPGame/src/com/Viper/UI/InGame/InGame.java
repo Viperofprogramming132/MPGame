@@ -72,13 +72,6 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		super.paintComponent(g);
 		
 		DrawMap(g);
-		
-		try {
-			Thread.sleep(20);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	private void DrawMap(Graphics g)

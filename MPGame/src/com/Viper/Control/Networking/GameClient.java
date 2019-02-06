@@ -183,7 +183,7 @@ public class GameClient {
 	            }
 	        }
 	    	try {
-				Thread.sleep(20);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
