@@ -38,6 +38,8 @@ public class GameClient {
     
     private volatile boolean _ExpectedClose = false;
     
+    private volatile boolean _GameStarted = false;
+    
     private Message _StartResponse;
     
     Thread _Messenger;
@@ -45,60 +47,60 @@ public class GameClient {
     private final Runnable WaitForStart = () ->
     {
     	Message serverResponse;
-    	
-    	try
+    	while(!_GameStarted)
     	{
-    		_AwaitingResponse = true;
-    		_StartResponse = null;
-    		serverResponse = (Message) _ObjIn.readObject();
-    		
-    		if (serverResponse.getType() == MESSAGETYPE.GAMESTART)
-    		{
-    			_StartResponse = serverResponse;
-    			_AwaitingResponse = false;
-    		
-    			Controller.GetController().StartGame();
-    		}
-    		else if (serverResponse.getType() == MESSAGETYPE.SERVERSHUTDOWN)
-    		{
-    			_AwaitingResponse = false;
-    			
-    			_ServerDown = true;
-    			_ServerCon.close();
-    			_ServerCon = null;
-    		}
-    		else if(serverResponse.getType() == MESSAGETYPE.PLAYERINFO)
-    		{
-    			PlayerInfoMessage msg = (PlayerInfoMessage) serverResponse;
-    			Player p = new Player(msg.get_PlayerID(), true);
-    			p.setReady(msg.is_Ready());
-    			p.setSpriteIndex(msg.get_SelectedVehicleIndex());
-    			
-    			int i = 0;
-    			boolean matchFound = false;
-    			for (Player player : Controller.GetController().getPlayers())
-    			{
-    				if(player.getID() == p.getID())
-    				{
-    					matchFound = true;
-    					break;
-    				}
-    				i++;
-    			}
-    			
-    			if(matchFound)
-    				Controller.GetController().getPlayers().set(i, p);
-    			else
-    				Controller.GetController().addPlayer(p);
-    		}
-    		else
-    		{
-    			System.out.println("Unexpected Message from server");
-    		}
-    	}
-    	catch (Exception e)
-    	{
-    		e.printStackTrace();
+	    	try
+	    	{
+	    		_AwaitingResponse = true;
+	    		_StartResponse = null;
+	    		serverResponse = (Message) _ObjIn.readObject();
+	    		
+	    		if (serverResponse.getType() == MESSAGETYPE.GAMESTART)
+	    		{
+	    			_StartResponse = serverResponse;
+	    			_AwaitingResponse = false;
+	    			_GameStarted = true;
+	    			Controller.GetController().StartGame();
+	    		}
+	    		else if (serverResponse.getType() == MESSAGETYPE.SERVERSHUTDOWN)
+	    		{
+	    			_AwaitingResponse = false;
+	    			
+	    			_ServerDown = true;
+	    			_ServerCon.close();
+	    			_ServerCon = null;
+	    		}
+	    		else if(serverResponse.getType() == MESSAGETYPE.PLAYERINFO)
+	    		{
+	    			PlayerInfoMessage msg = (PlayerInfoMessage) serverResponse;
+	    			Player p = new Player(msg.get_PlayerID(), true);
+	    			p.setReady(msg.is_Ready());
+	    			p.setSpriteIndex(msg.get_SelectedVehicleIndex());
+	    			
+	    			int i = 0;
+	    			boolean Contained = false;
+	    			ArrayList<Player> players = new ArrayList<>(Controller.GetController().getPlayers());
+	    			for (Player player : players)
+	    			{
+	    				if(player.getID() == p.getID())
+	    				{
+	    					Controller.GetController().getPlayers().set(i, p);
+	    					Contained = true;
+	    				}
+	    				i++;
+	    			}
+	    			if(!Contained)
+	    				Controller.GetController().addPlayer(p);
+	    		}
+	    		else
+	    		{
+	    			System.out.println("Unexpected Message from server");
+	    		}
+	    	}
+	    	catch (Exception e)
+	    	{
+	    		e.printStackTrace();
+	    	}
     	}
     };
     

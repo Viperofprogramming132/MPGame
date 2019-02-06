@@ -46,7 +46,7 @@ public class GameServer {
             try {
                 Socket aClient = _ServerSocket.accept();
                 System.out.println("Client connection accepted: " + aClient.getInetAddress().toString());
-                _ClientSockets.add(aClient);
+                _ObservablePreGameLobby.add(aClient);
 
                 //Create a new Session. Check if the session can open the in/out streams for the socket.
                 //If yes, then launch the Session's run on a separate thread.
@@ -59,7 +59,7 @@ public class GameServer {
                     //Could not open the in/out streams for the socket. Close the socket and remove from the list.
                 	System.out.println("Could not get the in or out stream for the connection. Connection is closed");
                     aClient.close();
-                    _ClientSockets.remove(aClient);
+                    _ObservablePreGameLobby.remove(aClient);
                 }
 
             } catch (Exception e) {
@@ -81,14 +81,13 @@ public class GameServer {
     }
     
     private void HandleLobbyChange(ListChangeListener.Change<? extends Socket> change) {
-        if (change.wasAdded()) {
-            System.out.println("A new player has added to the lobby, " + change.getAddedSubList().get(0).getInetAddress() + ".");
-            //Send to Chat Player Joined
-        }
-
-        if (change.wasRemoved()) {
-            System.out.println("A player has removed from the lobby: " + change.getAddedSubList().get(0).getInetAddress().toString());
-        }
+    	while(change.next())
+    	{
+    		if (change.wasAdded()) {
+            	System.out.println("A new player has added to the lobby, " + change.getAddedSubList().get(0).getInetAddress() + ".");
+            	
+        	}
+    	}
         
         
 
@@ -151,7 +150,7 @@ public class GameServer {
             }
 
             _ClientSessions.clear();
-            _ClientSockets.clear();
+            _ObservablePreGameLobby.clear();
             _IsRunning = false;
             System.out.println("Server has stopped.");
 
@@ -162,7 +161,7 @@ public class GameServer {
     
     private void SendServerDownMessageToAllClients() {
         Message msg = new Message(MESSAGETYPE.SERVERSHUTDOWN);
-        if (_ClientSockets != null) {
+        if (_ObservablePreGameLobby != null) {
             for (Session _ClientSession : _ClientSessions) {
 
                 if (_ClientSession.SendMessage(msg)) {
@@ -188,14 +187,8 @@ public class GameServer {
     	}
     	
         Message msg = new Message(MESSAGETYPE.GAMESTART);
-        if (_ClientSockets != null) {
-            for (Session _ClientSession : _ClientSessions) {
-                if (_ClientSession.SendMessage(msg)) {
-                	System.out.println("Game Start Message sent to players");
-                } else {
-                	System.out.println("Could not send game start notification to a client.");
-                }
-            }
+        if (_ObservablePreGameLobby != null) {
+        	BroadcastMessage(null, msg);
         }
         
         return true;
@@ -247,7 +240,7 @@ public class GameServer {
     public void DisconnectClient(Session toDisconnect)
     {
     	_ClientSessions.remove(toDisconnect);
-    	_ClientSockets.remove(toDisconnect.getSocket());
+    	_ObservablePreGameLobby.remove(toDisconnect.getSocket());
     }
     
     public boolean ContainsClient(Session toCheck)
