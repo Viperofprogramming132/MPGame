@@ -80,15 +80,7 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		AffineTransform tx = new AffineTransform();
 		if(_Map == null)
 		{
-			File f = new File("src/imgs/maptextures/");
-			File[] files = f.listFiles();
-			BufferedImage img;
-			try {
-				img = ImageIO.read(files[Controller.GetController().get_SelectedMap()]);
-			_Map = new ImageIcon(img).getImage();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			_Map = Controller.GetController().get_GameController().get_Map();
 			
 			WORLD_SIZE_X = _Map.getWidth(null) * 8;
 			WORLD_SIZE_Y = _Map.getHeight(null) * 8;
@@ -129,11 +121,15 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 			_VehicleLabels.get(i).Initialise();
 			
 			//TODO: Change later
-			_VehicleLabels.get(i).setLocation(100, 100);
-			_VehicleLabels.get(i).setStartImage(0);
-			
 			this.add(_VehicleLabels.get(i));
+			
+			
+			_VehicleLabels.get(i).setStartImage();
+			
+
 			_VehicleLabels.get(i).setVisible(true);
+			
+			_VehicleLabels.get(i).setLocation(700, 700);
 		}
 		
 	}
@@ -176,6 +172,11 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		if((int) e.getKeyCode() == KeyEvent.VK_S)
 		{
 			_nonRemotePlayer.getSprite().get_Vehicle().set_backwards(true);
+		}
+		if((int) e.getKeyCode() == KeyEvent.VK_SPACE)
+		{
+			_nonRemotePlayer.getSprite().getLocation().x += 10;
+			_nonRemotePlayer.getSprite().getLocation().y += 10;
 		}
 			
 	}

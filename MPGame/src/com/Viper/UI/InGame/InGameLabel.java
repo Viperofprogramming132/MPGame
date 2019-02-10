@@ -7,6 +7,9 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
 import java.io.IOException;
 
 import javax.sound.midi.Receiver;
@@ -28,7 +31,6 @@ public class InGameLabel extends JLabel{
 	{
 		_Player = player;		
 		setOpaque(false);
-		setDoubleBuffered(true);
 	}
 	
 	public void Initialise()
@@ -51,28 +53,33 @@ public class InGameLabel extends JLabel{
 		this._VehicleLogic = _Vehicle;
 	}
 
-	public void setStartImage(int index) {
+	public void setStartImage() {
 		try {
-			_VehicleSprite = _VehicleLogic.ReadVehicleImage(index);
+			_VehicleSprite = _VehicleLogic.ReadVehicleImage(_Player.getSpriteIndex());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+		
 		setIcon(new ImageIcon(_VehicleSprite));
+		
 		
 		if(_VehicleSprite.getWidth(null) > _VehicleSprite.getHeight(null))
 		{
 			setSize(_VehicleSprite.getWidth(null), _VehicleSprite.getWidth(null));
 			setBounds(0, 0, _VehicleSprite.getWidth(null), _VehicleSprite.getWidth(null));
 		}
-		if(_VehicleSprite.getHeight(null) > _VehicleSprite.getWidth(null))
+		else if(_VehicleSprite.getHeight(null) > _VehicleSprite.getWidth(null))
 		{
 			setSize(_VehicleSprite.getHeight(null), _VehicleSprite.getHeight(null));
 			setBounds(0, 0, _VehicleSprite.getHeight(null), _VehicleSprite.getHeight(null));
 		}
-		
-		
-		setLocation(0,0);
+		else
+		{
+			setSize(_VehicleSprite.getWidth(null), _VehicleSprite.getHeight(null));
+			setBounds(0, 0, _VehicleSprite.getWidth(null), _VehicleSprite.getHeight(null));
+		}
+	
 		
 		setVisible(true);
 	}
@@ -96,6 +103,4 @@ public class InGameLabel extends JLabel{
         
 		super.paintComponent(g);
 	}
-	
-
 }

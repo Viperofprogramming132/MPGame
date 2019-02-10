@@ -1,6 +1,7 @@
 package com.Viper.Model;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -12,6 +13,7 @@ import javax.swing.ImageIcon;
 
 import org.omg.CORBA._IDLTypeStub;
 
+import com.Viper.Control.CollisionManagment;
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
 import com.Viper.Control.Networking.GameClient;
@@ -42,6 +44,9 @@ public class Vehicle
 	
 	protected boolean _backwards = false;
 	
+	private Point location;
+	
+	private CollisionManagment _CM;
 	
 	private void SendVehicleUpdateMessage()
 	{
@@ -63,23 +68,52 @@ public class Vehicle
 	
 	public void Step()
 	{
+		if(_CM == null)
+		{
+			_CM = Controller.GetController().get_GameController().get_CM();
+		}
 		if(!_Player.isRemotePlayer())
 		{
 			UpdateSpeed();
 			CalculateNewLocation();
+			
+			UpdateLocation();
+			
 			SendVehicleUpdateMessage();
 		}
 	}
 	
+	private void UpdateLocation() {
+		
+		if(!_CM.CheckForCollision(_VehicleLabel.getX(), _VehicleLabel.getY()))
+			_VehicleLabel.setLocation(location);
+		else
+		{
+			_Speed = -5;
+			CalculateNewLocation();
+			_VehicleLabel.setLocation(location);
+		}	
+		
+	}
+
 	private void CalculateNewLocation() {
-		Point location = _VehicleLabel.getLocation();
+		location = _VehicleLabel.getLocation();
 		double y = (_Speed / 2) * Math.sin(_Angle);
 	    double x = (_Speed / 2 ) * Math.cos(_Angle);
 	    
 	    location.x += x;
 	    location.y += y;
 	    
-	    _VehicleLabel.setLocation(location);
+	    //Create a Buffered Image of the Label
+	    BufferedImage temp = new BufferedImage(
+	    		_VehicleLabel.getIcon().getIconWidth(),
+	    		_VehicleLabel.getIcon().getIconHeight(),
+	    		BufferedImage.TYPE_INT_ARGB);
+	    Graphics g = temp.getGraphics();
+	    
+	    _VehicleLabel.getIcon().paintIcon(null, g, 0, 0);
+	    
+	    _CM.CreateVehicleMask(temp, _Angle);
 	}
 
 	private void UpdateSpeed()
@@ -97,6 +131,10 @@ public class Vehicle
 
 	private void Accelerate(boolean reverse) {
 		int speedLimit = 50;
+		if (_Speed < 0 && !reverse)
+		{
+			_Speed = 0;
+		}
 		
 		if(_OnRoughTerrain)
 			speedLimit = speedLimit / 2;
@@ -156,7 +194,7 @@ public class Vehicle
 	private void SlowDown() {
 		isAccelerating = false;
 		
-		if(_Speed <= 0.05)
+		if(_Speed <= 0.3)
 		{
 			_Speed = 0;
 		}
@@ -204,6 +242,11 @@ public class Vehicle
 	public void setPlayer(Player p)
 	{
 		_Player = p;
+	}
+	
+	public Player getPlayer()
+	{
+		return _Player;
 	}
 
 	public double getAngle() {

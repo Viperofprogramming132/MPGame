@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.Viper.Control.Networking.GameClient;
 import com.Viper.Control.Networking.GameServer;
+import com.Viper.Sound.SoundController;
 import com.Viper.UI.UIControl;
 
 import javafx.collections.FXCollections;
@@ -21,6 +22,7 @@ public class Controller {
 	private GameClient _Client;
 	private GameServer _Server;
 	private boolean _Host = false;
+	private SoundController _SoundControl;
 	
 	ArrayList<Player> _Players = new ArrayList<>();
 	
@@ -52,13 +54,16 @@ public class Controller {
 				}
 			}
 		});
+		
+		_SoundControl = new SoundController();
 	}
 
 
 	public void StartApp() {
 		_UIController = UIControl.GetInstance();
 		
-		_UIController.OpenMainMenu();		
+		_UIController.OpenMainMenu();
+		_SoundControl.StartBackgroundMusic();
 	}
 	
 	public void ExitProgram()
@@ -166,6 +171,11 @@ public class Controller {
 	public ObservableList<Player> getObPlayers()
 	{
 		return _ObPlayers;
+	}
+	
+	public void addChatMessage(String message)
+	{
+		_UIController.AddChatMessage(message);
 	}
 	
 }

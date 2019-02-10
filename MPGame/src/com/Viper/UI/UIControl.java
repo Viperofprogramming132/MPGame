@@ -148,4 +148,9 @@ public class UIControl extends JFrame implements ActionListener {
 				_LobbyScreen.AppendChat("Player has left the Game: " + player);
 		}
 	}
+	
+	public void AddChatMessage(String message)
+	{
+		_LobbyScreen.AppendChat(message);
+	}
 }

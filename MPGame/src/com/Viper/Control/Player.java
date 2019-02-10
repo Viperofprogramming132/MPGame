@@ -11,7 +11,7 @@ import com.Viper.Control.Networking.Session;
 import com.Viper.Model.Vehicle;
 import com.Viper.UI.InGame.InGameLabel;
 
-public class Player implements ActionListener {
+public class Player {
 
 	private int _ID;
 	private String _Name;
@@ -29,12 +29,6 @@ public class Player implements ActionListener {
 	{
 		_ID = ID;
 		set_RemotePlayer(remote);
-		try {
-			_Name = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	public Player(int ID, boolean remote, GameClient client)
@@ -42,18 +36,6 @@ public class Player implements ActionListener {
 		_ID = ID;
 		set_RemotePlayer(remote);
 		_Client = client;
-		try {
-			_Name = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public int getID() {

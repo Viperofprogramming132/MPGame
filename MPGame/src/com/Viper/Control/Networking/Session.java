@@ -49,6 +49,7 @@ public class Session implements Runnable{
 		try {
 			_ObjOut = new ObjectOutputStream(_ClientSocket.getOutputStream());
 			_ObjIn = new ObjectInputStream(_ClientSocket.getInputStream());
+			_Player.setName(_ClientSocket.getInetAddress().getHostAddress());
 		} catch (Exception e) {
 			success = false;
 		}
@@ -70,7 +71,6 @@ public class Session implements Runnable{
 			try {
 				Thread.sleep(2);
 			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			try
@@ -106,6 +106,11 @@ public class Session implements Runnable{
                     }
                     _Lobby.BroadcastMessage(this, msg);
                     continue;
+                }
+                
+                if (msg.getType() == MESSAGETYPE.CHATMESSAGE)
+                {
+                	BroadcastMessage(msg);
                 }
                 
                 if(msg.getType() == MESSAGETYPE.READY)
@@ -146,6 +151,7 @@ public class Session implements Runnable{
 		
 		msg.set_Ready(_Player.isReady());
 		msg.set_SelectedVehicleIndex(_Player.getSpriteIndex());
+		msg.set_Name(_Player.getName());
 		
 		BroadcastMessage(msg);
 	}

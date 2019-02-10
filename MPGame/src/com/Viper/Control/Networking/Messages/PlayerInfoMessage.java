@@ -8,6 +8,8 @@ public class PlayerInfoMessage extends Message implements Serializable{
 	
 	private boolean _Ready;
 	
+	private String _Name;
+	
 	public PlayerInfoMessage(MESSAGETYPE type, int PlayerID) {
 		super(type, PlayerID);
 	}
@@ -26,6 +28,14 @@ public class PlayerInfoMessage extends Message implements Serializable{
 
 	public void set_Ready(boolean _Ready) {
 		this._Ready = _Ready;
+	}
+
+	public String get_Name() {
+		return _Name;
+	}
+
+	public void set_Name(String _Name) {
+		this._Name = _Name;
 	}
 
 	

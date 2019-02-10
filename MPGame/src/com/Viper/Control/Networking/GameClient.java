@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
+import com.Viper.Control.Networking.Messages.ChatMessage;
 import com.Viper.Control.Networking.Messages.LobbyInfoMessage;
 import com.Viper.Control.Networking.Messages.MESSAGETYPE;
 import com.Viper.Control.Networking.Messages.Message;
@@ -76,6 +77,7 @@ public class GameClient {
 	    			Player p = new Player(msg.get_PlayerID(), true);
 	    			p.setReady(msg.is_Ready());
 	    			p.setSpriteIndex(msg.get_SelectedVehicleIndex());
+	    			p.setName(msg.get_Name());
 	    			
 	    			int i = 0;
 	    			boolean Contained = false;
@@ -91,6 +93,12 @@ public class GameClient {
 	    			}
 	    			if(!Contained)
 	    				Controller.GetController().addPlayer(p);
+	    		}
+	    		else if (serverResponse.getType() == MESSAGETYPE.CHATMESSAGE)
+	    		{
+	    			ChatMessage chatMsg = (ChatMessage) serverResponse;
+	    			
+	    			Controller.GetController().addChatMessage(chatMsg.get_Message());
 	    		}
 	    		else
 	    		{
@@ -407,5 +415,12 @@ public class GameClient {
 	public Player getLocalPlayer()
 	{
 		return _LocalPlayer;
+	}
+	
+	public void SendChatMessage(String message)
+	{
+		message = _LocalPlayer.getName() + ": " + message;
+		ChatMessage msg = new ChatMessage(MESSAGETYPE.CHATMESSAGE, _LocalPlayer.getID(), message);
+		SendOut(msg);
 	}
 }

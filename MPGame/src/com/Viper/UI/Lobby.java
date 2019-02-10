@@ -22,9 +22,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import javax.swing.ScrollPaneConstants;
+import javax.swing.text.DefaultCaret;
 
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
@@ -44,6 +46,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	private JTextArea _Chat;
 	private JTextField _Message;
 	private JButton _Send;
+	private JScrollPane _ChatScrollPane;
 	
 	private File[] _PossibleVehicles;
 	private Integer _ShownVehicles = 0;
@@ -143,6 +146,8 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 			_ShownVehicles = _PossibleVehicles.length - 1;
 		}
 		
+		Controller.GetController().getClient().getLocalPlayer().setSpriteIndex(_ShownVehicles);
+		
 		repaint();
 	}
 	
@@ -163,14 +168,14 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		
-		int cx = i.getWidth(null) / 2;
-		int cy = i.getHeight(null) / 2;
+		int cx = (i.getWidth(null) * 5) / 2;
+		int cy = (i.getHeight(null) * 5)/ 2;
 		
         AffineTransform oldAT = g2d.getTransform();
-        g2d.translate(cx + 200, cy+200);
+        g2d.translate(cx+160, cy+140);
         g2d.rotate(_imageAngleRad);
         g2d.translate(-cx, -cy);
-        g2d.drawImage(i, 0, 0, 200, 100, null);
+        g2d.drawImage(i, 0, 0, i.getWidth(null) * 5, i.getHeight(null) * 5, null);
         g2d.setTransform(oldAT);
 	}
 
@@ -184,7 +189,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_MenuContainer.add(_Create);
 		_MenuContainer.add(_Exit);
 		_MenuContainer.add(_Right);
-		_MenuContainer.add(_Chat);
+		_MenuContainer.add(_ChatScrollPane);
 		_MenuContainer.add(_Message);
 		_MenuContainer.add(_Send);
 		_MenuContainer.add(_PlayerView);
@@ -203,6 +208,8 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Send = new JButton("Send");
 		_Message = new JTextField("Write A Message to send to Chat");
 		_Chat = new JTextArea("Welcome To the server Current Players are: ");
+		_ChatScrollPane = new JScrollPane(_Chat);
+		_ChatScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		_Left.setSize(50, 50);
 		_Right.setSize(50, 50);
@@ -211,6 +218,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Send.setSize(100, 30);
 		_Message.setSize(500, 30);
 		_Chat.setSize(600, 500);
+		_ChatScrollPane.setSize(600, 500);
 		
 		_Left.setLocation(15, 220);
 		_Right.setLocation(520, 220);
@@ -219,6 +227,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Send.setLocation(1380, 525);
 		_Message.setLocation(880, 525);
 		_Chat.setLocation(880, 15);
+		_ChatScrollPane.setLocation(880, 15);
 		
 		_Left.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Right.setFont(new Font("Consolas",Font.BOLD, 14));
@@ -227,6 +236,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Send.setFont(new Font("Consolas",Font.PLAIN, 12));
 		_Message.setFont(new Font("Consolas",Font.PLAIN, 12));
 		_Chat.setFont(new Font("Consolas",Font.PLAIN, 12));
+		_ChatScrollPane.setFont(new Font("Consolas",Font.PLAIN, 12));
 		
 		_Left.setBackground(Color.WHITE);
 		_Right.setBackground(Color.WHITE);
@@ -235,6 +245,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Send.setBackground(Color.WHITE);
 		_Message.setBackground(Color.WHITE);
 		_Chat.setBackground(Color.WHITE);
+		_ChatScrollPane.setBackground(Color.WHITE);
 		
 		_Left.addActionListener(this);
 		_Right.addActionListener(this);
@@ -242,6 +253,10 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Exit.addActionListener(this);
 		_Send.addActionListener(this);
 
+		_ChatScrollPane.setAutoscrolls(true);
+		_Chat.setAutoscrolls(true);
+		
+		
 		
 		_Chat.setEditable(false);
 		_Chat.setLineWrap(true);
@@ -288,6 +303,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
                 	Controller.GetController().SendReady();
                 	System.out.println("Ready");
                 	break;
+                case "Send":
+                	Controller.GetController().getClient().SendChatMessage(_Message.getText());
+                	AppendChat(Controller.GetController().getClient().getLocalPlayer().getName() + ": " + _Message.getText());
             }
         }
 		
@@ -310,7 +328,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	
 	public void AppendChat(String toAppend)
 	{
-		
 		_Chat.append("\n" + toAppend);
+		_Chat.setCaretPosition(_Chat.getDocument().getLength());
 	}
 }
