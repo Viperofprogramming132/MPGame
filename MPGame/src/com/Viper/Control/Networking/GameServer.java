@@ -1,6 +1,5 @@
 package com.Viper.Control.Networking;
 
-import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -178,11 +177,12 @@ public class GameServer {
     {
     	boolean allReady = true;
     	
-    	for (Session _ClientSession : _ClientSessions)
+    	for (int i = 0; i < _ClientSessions.size(); i++)
     	{
-    		if (!_ClientSession.getPlayer().isReady())
+    		if (!_ClientSessions.get(i).getPlayer().isReady())
     		{
     			return false;
+    			
     		}
     	}
     	

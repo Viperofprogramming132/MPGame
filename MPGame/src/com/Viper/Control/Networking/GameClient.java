@@ -43,15 +43,19 @@ public class GameClient {
     
     private Message _StartResponse;
     
+    private int _ErrorCount = 0;
+    
     Thread _Messenger;
     
     private final Runnable WaitForStart = () ->
     {
+    	
     	Message serverResponse;
-    	while(!_GameStarted)
+    	while(!_GameStarted && _ErrorCount < 5)
     	{
 	    	try
 	    	{
+	    		
 	    		_AwaitingResponse = true;
 	    		_StartResponse = null;
 	    		serverResponse = (Message) _ObjIn.readObject();
@@ -62,14 +66,17 @@ public class GameClient {
 	    			_AwaitingResponse = false;
 	    			_GameStarted = true;
 	    			Controller.GetController().StartGame();
+	    			_ErrorCount = 0;
 	    		}
 	    		else if (serverResponse.getType() == MESSAGETYPE.SERVERSHUTDOWN)
 	    		{
 	    			_AwaitingResponse = false;
 	    			
 	    			_ServerDown = true;
-	    			_ServerCon.close();
-	    			_ServerCon = null;
+	    			TryCloseCurrentConnection(false);
+	    			_ErrorCount = 0;
+	    			
+	    			Controller.GetController().ServerClosed();
 	    		}
 	    		else if(serverResponse.getType() == MESSAGETYPE.PLAYERINFO)
 	    		{
@@ -93,12 +100,14 @@ public class GameClient {
 	    			}
 	    			if(!Contained)
 	    				Controller.GetController().addPlayer(p);
+	    			_ErrorCount = 0;
 	    		}
 	    		else if (serverResponse.getType() == MESSAGETYPE.CHATMESSAGE)
 	    		{
 	    			ChatMessage chatMsg = (ChatMessage) serverResponse;
 	    			
 	    			Controller.GetController().addChatMessage(chatMsg.get_Message());
+	    			_ErrorCount = 0;
 	    		}
 	    		else
 	    		{
@@ -107,8 +116,13 @@ public class GameClient {
 	    	}
 	    	catch (Exception e)
 	    	{
-	    		e.printStackTrace();
+	    		_ErrorCount++;
 	    	}
+    	}
+    	
+    	if (_ErrorCount > 5)
+    	{
+    		TryCloseCurrentConnection(true);
     	}
     };
     
@@ -124,7 +138,7 @@ public class GameClient {
     
     private final Runnable MyUpdateListener = () ->
     {
-        while (_ListeningForUpdates && !_ServerDown) {
+        while (_ListeningForUpdates && !_ServerDown && _ErrorCount < 5) {
             Message msg = null;
             try {
             	synchronized (this) {
@@ -139,6 +153,7 @@ public class GameClient {
             } catch (Exception e) {
                 msg = null;
                 e.printStackTrace();
+                _ErrorCount++;
             }
             
 
@@ -156,6 +171,7 @@ public class GameClient {
         				i++;
         			}
         			Controller.GetController().getPlayers().get(i).get_VehicleLogic().VehicleUpdate(updateMsg);
+        			_ErrorCount = 0;
                 }
 
                 //If server down message received then stop listening and notify GameEngine
@@ -164,8 +180,14 @@ public class GameClient {
                     _ListeningForUpdates = false;
                     
                     //TODO QUIT;
+                    _ErrorCount = 0;
                 }
             }
+        }
+        
+        if (_ErrorCount > 5)
+        {
+        	TryCloseCurrentConnection(true);
         }
     };
     
@@ -176,6 +198,7 @@ public class GameClient {
 	        if (!_ServerDown) {
 	            if (_ListeningForUpdates) {
 	                if (_LastUpdateSent != null) {
+	                	
 	                    //Sending out the message and checking for error
 	                    if (!SendOut(_LastUpdateSent)) {
 	                        //If error occurred
@@ -209,6 +232,7 @@ public class GameClient {
         } catch (Exception e) {
             System.out.println("Error Sending Message: ");
             e.printStackTrace();
+            _ErrorCount++;
         }
         
         return result;
@@ -262,11 +286,13 @@ public class GameClient {
                         		
                         		_LocalPlayer = new Player(mapMsg.get_PlayerID(), false, this);
                         		Controller.GetController().set_SelectedMap(mapMsg.getMapIndex());
+                        		_LocalPlayer.setName("Player " + mapMsg.get_PlayerID());
                         		
                         		Controller.GetController().addPlayer(_LocalPlayer);
                         		for (int i : mapMsg.get_CurrentPlayers())
                         		{
                         			Player p = new Player(i, true);
+                        			p.setName("Player " + i);
                         			Controller.GetController().addPlayer(p);
                         		}
                         	}
@@ -405,10 +431,13 @@ public class GameClient {
 		this._ExpectedClose = _ExpectedClose;
 	}
 	
-	public void Ready(int SelectedCarIndex)
+	public void PlayerUpdate(int SelectedCarIndex)
 	{
-		Message msg = new Message(MESSAGETYPE.READY, _LocalPlayer.getID());
+		PlayerInfoMessage msg = new PlayerInfoMessage(MESSAGETYPE.READY, _LocalPlayer.getID());
 		
+		msg.set_SelectedVehicleIndex(SelectedCarIndex);
+		msg.set_Name(_LocalPlayer.getName());
+		msg.set_Ready(_LocalPlayer.isReady());
 		SendOut(msg);
 	}
 	
@@ -421,6 +450,12 @@ public class GameClient {
 	{
 		message = _LocalPlayer.getName() + ": " + message;
 		ChatMessage msg = new ChatMessage(MESSAGETYPE.CHATMESSAGE, _LocalPlayer.getID(), message);
+		SendOut(msg);
+	}
+
+	public void StartGame() {
+		Message msg = new Message(MESSAGETYPE.GAMESTART);
+		
 		SendOut(msg);
 	}
 }

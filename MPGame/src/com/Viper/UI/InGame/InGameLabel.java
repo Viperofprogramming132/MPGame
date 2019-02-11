@@ -33,7 +33,7 @@ public class InGameLabel extends JLabel{
 		setOpaque(false);
 	}
 	
-	public void Initialise()
+	public void Initialise(InGame game)
 	{
 		_VehicleLogic = new Vehicle();
 		_VehicleLogic.SelfUpdate();
@@ -43,6 +43,7 @@ public class InGameLabel extends JLabel{
 		
 		_Player.set_VehicleLogic(_VehicleLogic);
 		_Player.setSprite(this);
+		_VehicleLogic.setCurrentGame(game);
 	}
 	
 	public Vehicle get_Vehicle() {

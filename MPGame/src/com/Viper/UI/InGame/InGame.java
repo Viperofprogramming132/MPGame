@@ -118,7 +118,7 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		{
 			_VehicleLabels.add(new InGameLabel(temp.get(i)));
 			
-			_VehicleLabels.get(i).Initialise();
+			_VehicleLabels.get(i).Initialise(this);
 			
 			//TODO: Change later
 			this.add(_VehicleLabels.get(i));
@@ -129,7 +129,7 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 
 			_VehicleLabels.get(i).setVisible(true);
 			
-			_VehicleLabels.get(i).setLocation(700, 700);
+			_VehicleLabels.get(i).setLocation(410, 710);
 		}
 		
 	}
@@ -206,5 +206,9 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	public ArrayList<InGameLabel> getVehicleLabels()
+	{
+		return _VehicleLabels;
+	}
 }

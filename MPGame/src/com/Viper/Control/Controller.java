@@ -4,6 +4,8 @@ package com.Viper.Control;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import com.Viper.Control.Networking.GameClient;
 import com.Viper.Control.Networking.GameServer;
 import com.Viper.Sound.SoundController;
@@ -105,32 +107,9 @@ public class Controller {
 	}
 	
 	public void StartGame() {
-		
-		if(_Server != null)
-		{
-			_Client.getLocalPlayer().setReady(true);
-			//Sleep to allow ready to be set
-			try {
-				Thread.sleep(2);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(_Server.SendGameStartToClients())
-			{
-				_GameController = new Game(_ObPlayers);
-				_UIController.OpenGame();
-			}
-			else
-			{
-				return;
-			}
-		}
-		else
-		{
+		if (_GameController == null)
 			_GameController = new Game(_ObPlayers);
-			_UIController.OpenGame();
-		}
+		_UIController.OpenGame();
 	}
 	
 	public void SendReady()
@@ -176,6 +155,46 @@ public class Controller {
 	public void addChatMessage(String message)
 	{
 		_UIController.AddChatMessage(message);
+	}
+
+
+	public void UpdatePlayer(String text) {
+		_Client.getLocalPlayer().setName(text);
+		
+		_Client.PlayerUpdate(_Client.getLocalPlayer().getSpriteIndex());		
+	}
+	
+	public void SendGameStart()
+	{
+		_Client.StartGame();
+	}
+
+
+	public void Disconnect() {
+		
+		if (_Client != null)
+		{
+			_Client.TryCloseCurrentConnection(true);
+		}
+		//Ensure the Client Disconnect has been processed before shutting the server
+		try {
+			Thread.sleep(5);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(_Server != null)
+		{
+			_Server.StopServer();
+		}
+		
+	}
+
+
+	public void ServerClosed() {
+		JOptionPane.showMessageDialog(_UIController, "Server Was Closed Returning to the Main Menu", "Server Closed", JOptionPane.WARNING_MESSAGE);
+		
+		_UIController.OpenMainMenu();
 	}
 	
 }

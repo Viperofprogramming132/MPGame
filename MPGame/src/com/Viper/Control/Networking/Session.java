@@ -41,7 +41,7 @@ public class Session implements Runnable{
     {
     	_ClientSocket = ClientSocket;
     	_Lobby = lobby;
-    	_Player = new Player(_Lobby.getSessionCount() + 2, true);
+    	_Player = new Player(_Lobby.getSessionCount() + 1, true);
     }
     
 	public boolean OpenStreams() {
@@ -49,7 +49,7 @@ public class Session implements Runnable{
 		try {
 			_ObjOut = new ObjectOutputStream(_ClientSocket.getOutputStream());
 			_ObjIn = new ObjectInputStream(_ClientSocket.getInputStream());
-			_Player.setName(_ClientSocket.getInetAddress().getHostAddress());
+			_Player.setName("Player " + _Player.getID());
 		} catch (Exception e) {
 			success = false;
 		}
@@ -68,11 +68,6 @@ public class Session implements Runnable{
 		
 		while (!_ClientSocket.isClosed() && !_ShuttingDown && _ExceptionCounter < 5)
 		{
-			try {
-				Thread.sleep(2);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
 			try
 			{
 				msg = (Message) _ObjIn.readObject();
@@ -90,7 +85,6 @@ public class Session implements Runnable{
                 if (msg.getType() == MESSAGETYPE.INGAMEPOSUPDATE) {
                     if (_Lobby != null) {
                     	_Lobby.BroadcastMessage(this, msg);
-                    	//System.out.println("Update Recived");
                     }
                     continue;
                 }
@@ -115,7 +109,14 @@ public class Session implements Runnable{
                 
                 if(msg.getType() == MESSAGETYPE.READY)
                 {
-                	_Player.setReady(!_Player.isReady());
+                	PlayerInfoMessage plInfo = (PlayerInfoMessage) msg;
+                	_Player.setReady(plInfo.is_Ready());
+                	_Player.setName(plInfo.get_Name());
+                	_Player.setSpriteIndex(plInfo.get_SelectedVehicleIndex());
+                }
+                if(msg.getType() == MESSAGETYPE.GAMESTART)
+                {
+                	_Lobby.SendGameStartToClients();
                 }
 			}
 			catch (Exception e)
@@ -124,6 +125,7 @@ public class Session implements Runnable{
 				{
 					if (_Lobby.ContainsClient(this))
 						_Lobby.DisconnectClient(this);
+					_ExceptionCounter++;
 				}
 			}
 			

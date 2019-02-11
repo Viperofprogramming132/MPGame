@@ -1,17 +1,15 @@
 package com.Viper.Model;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-
-import org.omg.CORBA._IDLTypeStub;
 
 import com.Viper.Control.CollisionManagment;
 import com.Viper.Control.Controller;
@@ -19,6 +17,7 @@ import com.Viper.Control.Player;
 import com.Viper.Control.Networking.GameClient;
 import com.Viper.Control.Networking.Messages.MESSAGETYPE;
 import com.Viper.Control.Networking.Messages.VehicleUpdateMessage;
+import com.Viper.UI.InGame.InGame;
 import com.Viper.UI.InGame.InGameLabel;
 
 public class Vehicle 
@@ -47,6 +46,8 @@ public class Vehicle
 	private Point location;
 	
 	private CollisionManagment _CM;
+	
+	private InGame _CurrentGame;
 	
 	private void SendVehicleUpdateMessage()
 	{
@@ -85,26 +86,18 @@ public class Vehicle
 	
 	private void UpdateLocation() {
 		
-		if(!_CM.CheckForCollision(_VehicleLabel.getX(), _VehicleLabel.getY()))
-			_VehicleLabel.setLocation(location);
-		else
-		{
-			_Speed = -5;
-			CalculateNewLocation();
-			_VehicleLabel.setLocation(location);
-		}	
-		
+		_VehicleLabel.setLocation(location);
 	}
 
 	private void CalculateNewLocation() {
-		location = _VehicleLabel.getLocation();
+		Point localLocation = _VehicleLabel.getLocation();
 		double y = (_Speed / 2) * Math.sin(_Angle);
 	    double x = (_Speed / 2 ) * Math.cos(_Angle);
 	    
-	    location.x += x;
-	    location.y += y;
+	    localLocation.x += x;
+	    localLocation.y += y;
 	    
-	    //Create a Buffered Image of the Label
+	    //Create a Buffered Image of the Label used for collision
 	    BufferedImage temp = new BufferedImage(
 	    		_VehicleLabel.getIcon().getIconWidth(),
 	    		_VehicleLabel.getIcon().getIconHeight(),
@@ -114,6 +107,45 @@ public class Vehicle
 	    _VehicleLabel.getIcon().paintIcon(null, g, 0, 0);
 	    
 	    _CM.CreateVehicleMask(temp, _Angle);
+	    
+	    //Check if it would collide with object if it does dont move
+	    if (!_CM.CheckForCollision(localLocation.x, localLocation.y) && !_CM.CheckVehicleCollision(localLocation, GetAllLocations((ArrayList<InGameLabel>)_CurrentGame.getVehicleLabels().clone()), GetAllRotations((ArrayList<InGameLabel>)_CurrentGame.getVehicleLabels().clone())))
+	    {
+	    	location = localLocation;
+	    }
+	    else
+	    {
+	    	//Reset speed back to just starting speed so that you have to re accelerate 
+	    	_Speed = 5;
+	    }
+	}
+	
+	private Point[] GetAllLocations(ArrayList<InGameLabel> vehicleLabels)
+	{
+		ArrayList<Point> locations = new ArrayList<>();
+		
+		vehicleLabels.remove(_VehicleLabel);
+		
+		for (InGameLabel igl : vehicleLabels)
+		{
+			locations.add(igl.getLocation());
+		}
+		
+		return locations.toArray(new Point[locations.size()]);
+	}
+	
+	private Double[] GetAllRotations(ArrayList<InGameLabel> vehicleLabels)
+	{
+		ArrayList<Double> angles = new ArrayList<>();
+		
+		vehicleLabels.remove(_VehicleLabel);
+		
+		for (InGameLabel igl : vehicleLabels)
+		{
+			angles.add(igl.get_Vehicle().getAngle());
+		}
+		
+		return angles.toArray(new Double[angles.size()]);
 	}
 
 	private void UpdateSpeed()
@@ -267,5 +299,10 @@ public class Vehicle
 		_Angle = msg.get_Angle();
 		_VehicleLabel.setLocation(msg.get_X(), msg.get_Y());
 		
+	}
+	
+	public void setCurrentGame(InGame game)
+	{
+		_CurrentGame = game;
 	}
 }

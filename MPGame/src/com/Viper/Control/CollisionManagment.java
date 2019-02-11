@@ -3,6 +3,8 @@ package com.Viper.Control;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
@@ -10,6 +12,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
@@ -34,7 +37,7 @@ public class CollisionManagment {
 	private SwingWorker<?, ?> _MapSW;
 	private SwingWorker<?, ?> _VehicleSW;
 	
-	ShowImageForm s;
+	private Rectangle2D _VehicleCollisionBox;
 	
 	//Shrinks everything down in size to allow for faster processing
 	public CollisionManagment(BufferedImage map)
@@ -59,7 +62,6 @@ public class CollisionManagment {
 					@Override
 					protected String doInBackground() throws Exception {
 						_MapArea = getOutline(Color.BLACK, _MapMask);
-						new ShowImageForm(_MapArea);
 						return "";
 					}
         	
@@ -74,6 +76,7 @@ public class CollisionManagment {
 		
 		Vehicle = rotateImageByDegrees(Vehicle, angle);
 		
+		
 		_VehicleMask = new BufferedImage(
 				Vehicle.getWidth(),
 				Vehicle.getHeight(),
@@ -83,10 +86,6 @@ public class CollisionManagment {
         g.drawImage(Vehicle, _CollisionVehicleFilter, 0, 0);
         
         g.dispose();
-        if (s == null)
-        	s = new ShowImageForm(new ImageIcon(_VehicleMask));
-        else
-        	s.updateLabel(new ImageIcon(_VehicleMask));
         
         if(_VehicleSW == null || _VehicleSW.isDone())
         {
@@ -96,14 +95,41 @@ public class CollisionManagment {
 				@Override
 				protected String doInBackground() throws Exception {
 					_VehicleArea = getOutline(Color.BLACK, _VehicleMask);
+					if (angle == 0)
+						_VehicleCollisionBox = _VehicleArea.getBounds2D();
 					return "";
 				}
 		
 			};
 			_VehicleSW.execute();
         }
+	}
+	
+	@SuppressWarnings("static-access")
+	public boolean CheckVehicleCollision(Point RequestingVehicleLocation, Point[] VehicleLocations, Double[] VehicleRotations)
+	{
+		boolean result = false;
 		
+		if(_VehicleCollisionBox != null)
+		{
+			for (int i = 0; i < VehicleLocations.length; i++)
+			{			
+				AffineTransform tx = new AffineTransform();
+				tx.rotate(VehicleRotations[i]);
+				
+				Shape shape = tx.createTransformedShape(_VehicleCollisionBox);
+				
+				PathIterator pi = shape.getPathIterator(null);
+				
+				if(_VehicleArea.intersects(pi, VehicleLocations[i].x - RequestingVehicleLocation.x, VehicleLocations[i].y - RequestingVehicleLocation.y, 1, 1))
+				{
+					result = true;
+					break;
+				}
+			}
+		}
 		
+		return result;
 	}
 	
     public GeneralPath getOutline(Color target, BufferedImage bi) {
@@ -143,18 +169,16 @@ public class CollisionManagment {
     		return false;
     	boolean result = false;
     	
-    	//So it doesnt overwrite the map
     	
+    	//Create a iterator so it can check that every point is not colliding
     	PathIterator PI = _MapArea.getPathIterator(null);
     	
-    	result = _VehicleArea.intersects(PI, x / 16, y / 16, 1, 1);
+    	//Checks if the Vehicle collides with the collision map created of the map
+    	//+1 on both due to shrinking of the map for speed causes so offset issues this is to fix them
+    	//ONLY CHECKS THE MAP
+    	result = _VehicleArea.intersects(PI, (x / 16) + 1, (y / 16) + 1, 1, 1);
     	
     	return result; 
-    }
-    
-    public BufferedImage get_MapMask()
-    {
-    	return _MapMask;
     }
     
     public BufferedImage scale(BufferedImage sbi, double scale) {
@@ -185,8 +209,6 @@ public class CollisionManagment {
         at.rotate(rads, x, y);
         g2d.setTransform(at);
         g2d.drawImage(img, 0, 0, null);
-        g2d.setColor(Color.RED);
-        g2d.drawRect(0, 0, img.getWidth() - 1, img.getHeight() - 1);
         g2d.dispose();
 
         return rotated;

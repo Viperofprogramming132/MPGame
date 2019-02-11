@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
 
 import com.Viper.Control.Controller;
@@ -47,6 +50,8 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	private JTextField _Message;
 	private JButton _Send;
 	private JScrollPane _ChatScrollPane;
+	private JTextField _PlayerName;
+	private JLabel _PlayerNameLabel;
 	
 	private File[] _PossibleVehicles;
 	private Integer _ShownVehicles = 0;
@@ -193,6 +198,8 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_MenuContainer.add(_Message);
 		_MenuContainer.add(_Send);
 		_MenuContainer.add(_PlayerView);
+		_MenuContainer.add(_PlayerName);
+		_MenuContainer.add(_PlayerNameLabel);
 		_MenuContainer.setVisible(true);
 		_MenuContainer.setOpaque(false);
 	}
@@ -209,6 +216,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Message = new JTextField("Write A Message to send to Chat");
 		_Chat = new JTextArea("Welcome To the server Current Players are: ");
 		_ChatScrollPane = new JScrollPane(_Chat);
+		_PlayerName = new JTextField(Controller.GetController().getClient().getLocalPlayer().getName());
+		_PlayerNameLabel = new JLabel("Your Player Name (Change It):");
+		
 		_ChatScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		_Left.setSize(50, 50);
@@ -219,6 +229,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Message.setSize(500, 30);
 		_Chat.setSize(600, 500);
 		_ChatScrollPane.setSize(600, 500);
+		_PlayerName.setSize(100, 30);
 		
 		_Left.setLocation(15, 220);
 		_Right.setLocation(520, 220);
@@ -228,6 +239,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Message.setLocation(880, 525);
 		_Chat.setLocation(880, 15);
 		_ChatScrollPane.setLocation(880, 15);
+		_PlayerName.setLocation(200, 15);
 		
 		_Left.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Right.setFont(new Font("Consolas",Font.BOLD, 14));
@@ -237,6 +249,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Message.setFont(new Font("Consolas",Font.PLAIN, 12));
 		_Chat.setFont(new Font("Consolas",Font.PLAIN, 12));
 		_ChatScrollPane.setFont(new Font("Consolas",Font.PLAIN, 12));
+		_PlayerName.setFont(new Font("Consolas",Font.PLAIN, 12));
 		
 		_Left.setBackground(Color.WHITE);
 		_Right.setBackground(Color.WHITE);
@@ -246,12 +259,33 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Message.setBackground(Color.WHITE);
 		_Chat.setBackground(Color.WHITE);
 		_ChatScrollPane.setBackground(Color.WHITE);
+		_PlayerName.setBackground(Color.WHITE);
 		
 		_Left.addActionListener(this);
 		_Right.addActionListener(this);
 		_Create.addActionListener(this);
 		_Exit.addActionListener(this);
 		_Send.addActionListener(this);
+		_PlayerName.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				changedUpdate(e);
+				
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				//Call changed to stop repetition
+				changedUpdate(e);
+				
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				Controller.GetController().UpdatePlayer(_PlayerName.getText());
+			}
+		});
 
 		_ChatScrollPane.setAutoscrolls(true);
 		_Chat.setAutoscrolls(true);
@@ -293,7 +327,8 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
                     break;
                 case "Start Game":
                 	System.out.println("Start Game");
-                	Controller.GetController().StartGame();
+                	Controller.GetController().SendReady();
+                	Controller.GetController().SendGameStart();
                 	break;
                 case "X":
                     Controller.GetController().ExitProgram();
@@ -306,6 +341,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
                 case "Send":
                 	Controller.GetController().getClient().SendChatMessage(_Message.getText());
                 	AppendChat(Controller.GetController().getClient().getLocalPlayer().getName() + ": " + _Message.getText());
+                	_Message.setText("");
             }
         }
 		

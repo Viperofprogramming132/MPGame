@@ -105,7 +105,7 @@ public class Player {
 	public void setReady(boolean Ready) {
 		this._Ready = Ready;
 		if (_Client != null)
-			_Client.Ready(_SpriteIndex);
+			_Client.PlayerUpdate(_SpriteIndex);
 	}
 	
 	public int getSpriteIndex()
