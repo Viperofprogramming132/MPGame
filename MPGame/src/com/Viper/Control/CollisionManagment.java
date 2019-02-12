@@ -2,21 +2,17 @@ package com.Viper.Control;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
 
 import com.Viper.Debug.ShowImageForm;
 import com.Viper.Model.TwoToneImageFilter;
@@ -38,6 +34,8 @@ public class CollisionManagment {
 	private SwingWorker<?, ?> _VehicleSW;
 	
 	private Rectangle2D _VehicleCollisionBox;
+	
+	ShowImageForm s;
 	
 	//Shrinks everything down in size to allow for faster processing
 	public CollisionManagment(BufferedImage map)
@@ -94,7 +92,7 @@ public class CollisionManagment {
 	
 				@Override
 				protected String doInBackground() throws Exception {
-					_VehicleArea = getOutline(Color.BLACK, _VehicleMask);
+					_VehicleArea = getOutline(Color.WHITE, _VehicleMask);
 					if (angle == 0)
 						_VehicleCollisionBox = _VehicleArea.getBounds2D();
 					return "";
@@ -105,23 +103,27 @@ public class CollisionManagment {
         }
 	}
 	
+	//AABB collision
 	@SuppressWarnings("static-access")
-	public boolean CheckVehicleCollision(Point RequestingVehicleLocation, Point[] VehicleLocations, Double[] VehicleRotations)
+	public boolean CheckVehicleCollision(Point RequestingVehicleLocation, double RequestingVehicleRotation, Point[] VehicleLocations, Double[] VehicleRotations)
 	{
 		boolean result = false;
 		
 		if(_VehicleCollisionBox != null)
 		{
+			AffineTransform tx = new AffineTransform();
+			tx.rotate(RequestingVehicleRotation, _VehicleCollisionBox.getCenterX(), _VehicleCollisionBox.getCenterY());
+			
+			Shape RequestingVehicleCollisionBox = tx.createTransformedShape((Rectangle2D)_VehicleCollisionBox.clone()); 
 			for (int i = 0; i < VehicleLocations.length; i++)
 			{			
-				AffineTransform tx = new AffineTransform();
-				tx.rotate(VehicleRotations[i]);
+				tx = new AffineTransform();
+				tx.rotate(VehicleRotations[i], _VehicleCollisionBox.getCenterX(), _VehicleCollisionBox.getCenterY());
 				
-				Shape shape = tx.createTransformedShape(_VehicleCollisionBox);
+				Shape shape = tx.createTransformedShape((Rectangle2D)_VehicleCollisionBox.clone());
 				
-				PathIterator pi = shape.getPathIterator(null);
 				
-				if(_VehicleArea.intersects(pi, VehicleLocations[i].x - RequestingVehicleLocation.x, VehicleLocations[i].y - RequestingVehicleLocation.y, 1, 1))
+				if(RequestingVehicleCollisionBox.intersects((VehicleLocations[i].x + 20) - RequestingVehicleLocation.x, (VehicleLocations[i].y + 20) - RequestingVehicleLocation.y, shape.getBounds2D().getWidth(), shape.getBounds2D().getHeight()))
 				{
 					result = true;
 					break;
@@ -163,7 +165,8 @@ public class CollisionManagment {
         return gp;
     }
     
-    public boolean CheckForCollision(int x, int y)
+    @SuppressWarnings("static-access")
+	public boolean CheckForCollision(int x, int y)
     {
     	if (_MapArea == null || _VehicleArea == null)
     		return false;
@@ -213,5 +216,24 @@ public class CollisionManagment {
 
         return rotated;
     }
+    
+    public Rectangle2D getCollisionBox()
+    {
+    	return _VehicleCollisionBox;
+    }
+    
+    //Used for the checkpoint system as they do not need to be accurate
+    public boolean intersects(JLabel testa, JLabel testb){
+        Area areaA = new Area(testa.getBounds());
+        Area areaB = new Area(testb.getBounds());
+
+        return areaA.intersects(areaB.getBounds2D());
+    }
+
+	public void Close() {
+		_MapSW.cancel(true);
+		_VehicleSW.cancel(true);
+		
+	}
 }
 

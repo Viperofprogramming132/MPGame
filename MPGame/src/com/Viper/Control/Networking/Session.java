@@ -84,7 +84,7 @@ public class Session implements Runnable{
 				
                 if (msg.getType() == MESSAGETYPE.INGAMEPOSUPDATE) {
                     if (_Lobby != null) {
-                    	_Lobby.BroadcastMessage(this, msg);
+                    	BroadcastMessage(msg);
                     }
                     continue;
                 }
@@ -98,7 +98,7 @@ public class Session implements Runnable{
                     if (_Lobby.ContainsClient(this)) {
                         _Lobby.DisconnectClient(this);
                     }
-                    _Lobby.BroadcastMessage(this, msg);
+                    BroadcastMessage(msg);
                     continue;
                 }
                 
@@ -107,12 +107,14 @@ public class Session implements Runnable{
                 	BroadcastMessage(msg);
                 }
                 
-                if(msg.getType() == MESSAGETYPE.READY)
+                if(msg.getType() == MESSAGETYPE.PLAYERINFO)
                 {
                 	PlayerInfoMessage plInfo = (PlayerInfoMessage) msg;
                 	_Player.setReady(plInfo.is_Ready());
                 	_Player.setName(plInfo.get_Name());
                 	_Player.setSpriteIndex(plInfo.get_SelectedVehicleIndex());
+                	
+                	BroadcastMessage(plInfo);
                 }
                 if(msg.getType() == MESSAGETYPE.GAMESTART)
                 {

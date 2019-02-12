@@ -122,7 +122,7 @@ public class GameClient {
     	
     	if (_ErrorCount > 5)
     	{
-    		TryCloseCurrentConnection(true);
+    		Controller.GetController().Disconnect(true);
     	}
     };
     
@@ -187,7 +187,7 @@ public class GameClient {
         
         if (_ErrorCount > 5)
         {
-        	TryCloseCurrentConnection(true);
+        	Controller.GetController().Disconnect(true);
         }
     };
     
@@ -195,7 +195,7 @@ public class GameClient {
     {
     	while(!_ServerDown)
     	{
-	        if (!_ServerDown) {
+	        if (!_ServerDown && _ErrorCount < 5) {
 	            if (_ListeningForUpdates) {
 	                if (_LastUpdateSent != null) {
 	                	
@@ -204,11 +204,13 @@ public class GameClient {
 	                        //If error occurred
 	                        _ListeningForUpdates = false;
 	                        System.out.println("Error Message not sent");
+	                        _ErrorCount++;
 	                    }
 	                    else
 	                    {
 	                    	//System.out.println("Update Sent");
 	                    	_AwaitingResponse = true;
+	                    	_ErrorCount = 0;
 	                    }
 	                }
 	            }
@@ -219,6 +221,11 @@ public class GameClient {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+	    	
+	    	if (_ErrorCount > 5)
+	    	{
+	    		Controller.GetController().Disconnect(true);
+	    	}
     	}
 
     };
@@ -341,7 +348,8 @@ public class GameClient {
         boolean result = true;
         if (_ServerCon != null) {
             if (!_ServerCon.isClosed()) {
-
+            	
+                _Messenger.interrupt();
 
                 if (sayGoodBye) {
                     if (SendOut(new Message(MESSAGETYPE.DISCONNECTED)))
@@ -376,6 +384,10 @@ public class GameClient {
 
 
                 _ServerCon = null;
+                
+
+                _MainListeningThread.interrupt();
+                _StartThread.interrupt();
             }
         }
         return result;
@@ -433,7 +445,7 @@ public class GameClient {
 	
 	public void PlayerUpdate(int SelectedCarIndex)
 	{
-		PlayerInfoMessage msg = new PlayerInfoMessage(MESSAGETYPE.READY, _LocalPlayer.getID());
+		PlayerInfoMessage msg = new PlayerInfoMessage(MESSAGETYPE.PLAYERINFO, _LocalPlayer.getID());
 		
 		msg.set_SelectedVehicleIndex(SelectedCarIndex);
 		msg.set_Name(_LocalPlayer.getName());

@@ -10,6 +10,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
+import org.omg.CORBA._IDLTypeStub;
 
 import com.Viper.Control.CollisionManagment;
 import com.Viper.Control.Controller;
@@ -17,6 +20,7 @@ import com.Viper.Control.Player;
 import com.Viper.Control.Networking.GameClient;
 import com.Viper.Control.Networking.Messages.MESSAGETYPE;
 import com.Viper.Control.Networking.Messages.VehicleUpdateMessage;
+import com.Viper.UI.InGame.Checkpoint;
 import com.Viper.UI.InGame.InGame;
 import com.Viper.UI.InGame.InGameLabel;
 
@@ -49,6 +53,10 @@ public class Vehicle
 	
 	private InGame _CurrentGame;
 	
+	private int _CurrentCheckpointDes = 0;
+	
+	private int _Lap = 0;
+	
 	private void SendVehicleUpdateMessage()
 	{
 		if (_Client == null)
@@ -57,12 +65,9 @@ public class Vehicle
 		VehicleUpdateMessage message = new VehicleUpdateMessage(MESSAGETYPE.INGAMEPOSUPDATE, _Player.getID());
 		
 		message.set_Angle(_Angle);
-		message.set_CarImageIndex(_CarImageIndex);
-		message.set_OnRoughTerrain(_OnRoughTerrain);
-		message.set_Speed(_Speed);
-		message.setAccelerating(isAccelerating);
 		message.set_X(_VehicleLabel.getX());
 		message.set_Y(_VehicleLabel.getY());
+		message.set_Lap(_Lap);
 		
 		_Client.SendVehicleUpdate(message);
 	}
@@ -78,12 +83,46 @@ public class Vehicle
 			UpdateSpeed();
 			CalculateNewLocation();
 			
+			CheckIfPassedCheckpoint();
+			
 			UpdateLocation();
 			
 			SendVehicleUpdateMessage();
+			
+			CheckForWin();
 		}
 	}
 	
+	private void CheckForWin() {
+		for(InGameLabel v  : _CurrentGame.getVehicleLabels())
+		{
+			if(v.get_Vehicle().get_Lap() > 3)
+			{
+				Controller.GetController().OpenMessagePane(v.get_Vehicle().getPlayer().getName() + " has won the game! Closing the game", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+				
+				System.exit(0);
+			}
+		}
+	}
+
+	private void CheckIfPassedCheckpoint() {
+		ArrayList<Checkpoint> cps = _CurrentGame.get_CheckPointLabels();
+		
+		if(_CM.intersects(cps.get(_CurrentCheckpointDes), _VehicleLabel))
+		{
+			_CurrentCheckpointDes++;
+			
+			if(_CurrentCheckpointDes > cps.size() - 1)
+			{
+				_CurrentCheckpointDes = 0;
+			}
+			else
+			{
+				_Lap++;
+			}
+		}
+	}
+
 	private void UpdateLocation() {
 		
 		_VehicleLabel.setLocation(location);
@@ -109,7 +148,7 @@ public class Vehicle
 	    _CM.CreateVehicleMask(temp, _Angle);
 	    
 	    //Check if it would collide with object if it does dont move
-	    if (!_CM.CheckForCollision(localLocation.x, localLocation.y) && !_CM.CheckVehicleCollision(localLocation, GetAllLocations((ArrayList<InGameLabel>)_CurrentGame.getVehicleLabels().clone()), GetAllRotations((ArrayList<InGameLabel>)_CurrentGame.getVehicleLabels().clone())))
+	    if (!_CM.CheckForCollision(localLocation.x, localLocation.y) && !_CM.CheckVehicleCollision(localLocation, _Angle, GetAllLocations((ArrayList<InGameLabel>)_CurrentGame.getVehicleLabels().clone()), GetAllRotations((ArrayList<InGameLabel>)_CurrentGame.getVehicleLabels().clone())))
 	    {
 	    	location = localLocation;
 	    }
@@ -117,6 +156,7 @@ public class Vehicle
 	    {
 	    	//Reset speed back to just starting speed so that you have to re accelerate 
 	    	_Speed = 5;
+	    	Controller.GetController().PlayerCrashSound();
 	    }
 	}
 	
@@ -194,17 +234,17 @@ public class Vehicle
 			}
 			else if (_Speed < speedLimit * 0.25)
 			{
-				_Speed *= 1.4d;
+				_Speed *= 1.05d;
 				isAccelerating = true;
 			}
 			else if (_Speed < speedLimit * 0.75 )
 			{
-				_Speed *= 1.3d;
+				_Speed *= 1.02d;
 				isAccelerating = true;
 			}
 			else
 			{
-				_Speed *= 1.1d;
+				_Speed *= 1.01d;
 				isAccelerating = true;
 			}
 			
@@ -298,11 +338,16 @@ public class Vehicle
 	{
 		_Angle = msg.get_Angle();
 		_VehicleLabel.setLocation(msg.get_X(), msg.get_Y());
-		
+		_Lap = msg.get_Lap();
 	}
 	
 	public void setCurrentGame(InGame game)
 	{
 		_CurrentGame = game;
+	}
+	
+	public int get_Lap()
+	{
+		return _Lap;
 	}
 }

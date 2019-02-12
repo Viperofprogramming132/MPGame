@@ -1,7 +1,6 @@
 package com.Viper.Control;
 
 
-import java.net.Socket;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -26,9 +25,11 @@ public class Controller {
 	private boolean _Host = false;
 	private SoundController _SoundControl;
 	
-	ArrayList<Player> _Players = new ArrayList<>();
+	private ArrayList<Player> _Players = new ArrayList<>();
 	
-	ObservableList<Player> _ObPlayers = FXCollections.observableArrayList(_Players);
+	private ObservableList<Player> _ObPlayers = FXCollections.observableArrayList(_Players);
+	
+	private int _PlayerCount = 0;
 	
 	public static Controller GetController()
 	{
@@ -51,7 +52,15 @@ public class Controller {
 				{
 					if(e.wasAdded())
 					{
-						_UIController.PlayerConnectedUpdate(e.getAddedSubList().get(0).getName(), true);
+						if(_PlayerCount != _ObPlayers.size())
+							_UIController.PlayerConnectedUpdate(e.getAddedSubList().get(0), true);
+						else
+						{
+							if(!e.getAddedSubList().get(0).isReady())
+								_UIController.PlayerNameUpdate(e.getAddedSubList().get(0));
+							else
+								_UIController.AddChatMessage(e.getAddedSubList().get(0).getName() + " is now ready");
+						}
 					}
 				}
 			}
@@ -125,12 +134,14 @@ public class Controller {
 	public void addPlayer(Player p) 
 	{
 		_ObPlayers.add(p);
+		_PlayerCount++;
 	}
 	
 	public ObservableList<Player> getPlayers()
 	{
 		return _ObPlayers;
 	}
+	
 	
 	public GameClient getClient()
 	{
@@ -146,11 +157,7 @@ public class Controller {
 	{
 		_SelectedMap = Index;
 	}
-	
-	public ObservableList<Player> getObPlayers()
-	{
-		return _ObPlayers;
-	}
+
 	
 	public void addChatMessage(String message)
 	{
@@ -170,11 +177,12 @@ public class Controller {
 	}
 
 
-	public void Disconnect() {
+	public void Disconnect(boolean sayGoodbye) {
 		
 		if (_Client != null)
 		{
-			_Client.TryCloseCurrentConnection(true);
+			_Client.TryCloseCurrentConnection(sayGoodbye);
+			_Client = null;
 		}
 		//Ensure the Client Disconnect has been processed before shutting the server
 		try {
@@ -186,15 +194,38 @@ public class Controller {
 		if(_Server != null)
 		{
 			_Server.StopServer();
+			_Server = null;
 		}
 		
+		if(_GameController != null)
+		{
+			_GameController.CloseGame();
+			_GameController = null;
+			_Host = false;
+		}
+		
+		_UIController.OpenMainMenu();
 	}
 
 
 	public void ServerClosed() {
-		JOptionPane.showMessageDialog(_UIController, "Server Was Closed Returning to the Main Menu", "Server Closed", JOptionPane.WARNING_MESSAGE);
+		_UIController.OpenMessagePane("Server Was Closed Returning to the Main Menu", "Server Closed", JOptionPane.WARNING_MESSAGE);
 		
 		_UIController.OpenMainMenu();
 	}
 	
+	public int OpenJOptionsPane(String text)
+	{
+		return _UIController.OpenOptionsPanel(text);
+	}
+
+	public void OpenMessagePane(String text, String title, int Option)
+	{
+		_UIController.OpenMessagePane(text, title, Option);
+	}
+
+	public void PlayerCrashSound() {
+		_SoundControl.PlayCrash();
+		
+	}
 }

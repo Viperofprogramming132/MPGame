@@ -2,51 +2,24 @@ package com.Viper.Control.Networking.Messages;
 
 import java.io.Serializable;
 
-import com.Viper.Control.Networking.GameClient;
-
 public class VehicleUpdateMessage extends Message implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7664237747775579542L;
 
-	private double _Speed;
-	
 	private double _Angle;
-	
-	private boolean isAccelerating = false;
-	
-	private boolean _OnRoughTerrain = false;
-	
-	private int _CarImageIndex = 0;
 	
 	private int _X;
 	
 	private int _Y;
 	
+	private int _Lap;
+	
 	public VehicleUpdateMessage(MESSAGETYPE type, int playerID) {
 		super(type, playerID);
 		
-	}
-
-	public int get_CarImageIndex() {
-		return _CarImageIndex;
-	}
-
-	public void set_CarImageIndex(int _CarImageIndex) {
-		this._CarImageIndex = _CarImageIndex;
-	}
-
-	public boolean is_OnRoughTerrain() {
-		return _OnRoughTerrain;
-	}
-
-	public void set_OnRoughTerrain(boolean _OnRoughTerrain) {
-		this._OnRoughTerrain = _OnRoughTerrain;
-	}
-
-	public boolean isAccelerating() {
-		return isAccelerating;
-	}
-
-	public void setAccelerating(boolean isAccelerating) {
-		this.isAccelerating = isAccelerating;
 	}
 
 	public double get_Angle() {
@@ -57,13 +30,6 @@ public class VehicleUpdateMessage extends Message implements Serializable{
 		this._Angle = _Angle;
 	}
 
-	public double get_Speed() {
-		return _Speed;
-	}
-
-	public void set_Speed(double _Speed) {
-		this._Speed = _Speed;
-	}
 
 	public int get_X() {
 		return _X;
@@ -79,6 +45,15 @@ public class VehicleUpdateMessage extends Message implements Serializable{
 
 	public void set_Y(int _Y) {
 		this._Y = _Y;
+	}
+
+	public void set_Lap(int _Lap) {
+		this._Lap = _Lap;
+	}
+	
+	public int get_Lap()
+	{
+		return _Lap;
 	}
 
 }

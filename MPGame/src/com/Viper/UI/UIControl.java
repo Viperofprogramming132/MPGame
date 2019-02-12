@@ -3,16 +3,17 @@ package com.Viper.UI;
 import javax.swing.*;
 
 import com.Viper.Control.Controller;
+import com.Viper.Control.Player;
 import com.Viper.UI.InGame.InGame;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 public class UIControl extends JFrame implements ActionListener {
 
 	private static UIControl _instance;
@@ -40,7 +41,7 @@ public class UIControl extends JFrame implements ActionListener {
 	{
 		setTitle("Multiplayer Game");
 		setResizable(false);
-		setBounds(0,0,1000,1000);
+		setBounds(0,0,1500,1000);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		_Screens = new ArrayList<JPanel>();
@@ -74,12 +75,13 @@ public class UIControl extends JFrame implements ActionListener {
 			
 			@Override
 			public void windowClosing(WindowEvent e) {
-				
+
 			}
 			
 			@Override
 			public void windowClosed(WindowEvent e) {
-				Controller.GetController().Disconnect();
+				Controller.GetController().Disconnect(true);
+				return;
 			}
 			
 			@Override
@@ -145,7 +147,7 @@ public class UIControl extends JFrame implements ActionListener {
 
 	public void OpenGame() {
 		
-		HideAllScreens();
+		HideAllScreens();		
 		if(_InGameScreen == null)
 		{
 			_InGameScreen = new InGame(Controller.GetController().get_GameController().GetLocalPlayer());
@@ -153,12 +155,14 @@ public class UIControl extends JFrame implements ActionListener {
 			_ContentContainer.add(_InGameScreen);
 		}
 		
-		this.setSize(1000,1000);
+		;
+		this.setSize(1500,1000);
 		_InGameScreen.setVisible(true);
 	}
 
 	public void UpdateIngameScreen() {
-		_InGameScreen.Frame();
+		if (_InGameScreen != null)
+			_InGameScreen.Frame();
 		
 	}
 	
@@ -182,19 +186,39 @@ public class UIControl extends JFrame implements ActionListener {
 		}
 	}
 
-	public void PlayerConnectedUpdate(String player, boolean connected)
+	public void PlayerConnectedUpdate(Player player, boolean connected)
 	{
 		if(_LobbyScreen != null)
 		{
 			if(connected)
-				_LobbyScreen.AppendChat("Player has joined the Game: " + player);
+			{
+				_LobbyScreen.AppendChat("Player has joined the Game: " + player.getName());
+				_LobbyScreen.UpdateList(player);
+			}
 			else
+			{
 				_LobbyScreen.AppendChat("Player has left the Game: " + player);
+				_LobbyScreen.UpdateList(player);
+			}
 		}
 	}
 	
 	public void AddChatMessage(String message)
 	{
 		_LobbyScreen.AppendChat(message);
+	}
+
+	public void OpenMessagePane(String text, String windowName, int MessageType ) {
+		JOptionPane.showMessageDialog(this, text, windowName, MessageType);
+		
+	}
+	public int OpenOptionsPanel(String text)
+	{
+		return JOptionPane.showConfirmDialog(this, text);
+	}
+
+	public void PlayerNameUpdate(Player player) {
+		_LobbyScreen.AppendChat("A player has Changed their name to " + player.getName());
+		_LobbyScreen.UpdateList(player);
 	}
 }

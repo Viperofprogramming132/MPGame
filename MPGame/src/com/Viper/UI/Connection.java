@@ -15,7 +15,7 @@ import javax.swing.SwingConstants;
 
 import com.Viper.Control.Controller;
 
-
+@SuppressWarnings("serial")
 public class Connection extends JPanel implements ActionListener{
 	
 	private JTextField _ServerIP;

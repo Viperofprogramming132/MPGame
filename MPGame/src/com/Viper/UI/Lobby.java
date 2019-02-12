@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -26,16 +27,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.DefaultCaret;
 
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
 
-import javafx.scene.control.ListView;
-
+@SuppressWarnings("serial")
 public class Lobby extends JPanel implements ActionListener, MouseMotionListener{
 	
 	private final String VEHICLELOCATION = "src/imgs/vehicles/";
@@ -56,6 +56,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	private File[] _PossibleVehicles;
 	private Integer _ShownVehicles = 0;
 	private final boolean _Host;
+	private DefaultListModel<Player> _PlayerListModel;
 	
 	private double _imageAngleRad = 0;
 	
@@ -106,8 +107,15 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	private void PopulatePlayerView()
 	{
 		if(_PlayerView == null)
-			_PlayerView = new JList(Controller.GetController().getObPlayers().toArray());
+		{
+			_PlayerListModel = new DefaultListModel();
+			_PlayerView = new JList<Player>(_PlayerListModel);
+		}
 		
+		Controller.GetController().getPlayers().forEach(s -> _PlayerListModel.addElement(s));
+		
+		_PlayerView.setLocation(585, 15);
+		_PlayerView.setSize(100, 500);
 		
 	}
 	
@@ -366,5 +374,21 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	{
 		_Chat.append("\n" + toAppend);
 		_Chat.setCaretPosition(_Chat.getDocument().getLength());
+	}
+	
+	public void UpdateList(Player p)
+	{
+		boolean match = false;
+		for (int i = 0; i < _PlayerListModel.size(); i++)
+		{
+			if (_PlayerListModel.get(i).getID() == p.getID())
+			{
+				_PlayerListModel.set(i, p);
+				match = true;
+			}
+		}
+		
+		if(!match)
+			_PlayerListModel.addElement(p);
 	}
 }

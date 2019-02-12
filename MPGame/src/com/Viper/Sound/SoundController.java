@@ -12,12 +12,14 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class SoundController {
 
 	private Clip _BackgroundMusic;
+	private Clip _CrashSound;
 	
 	public SoundController()
 	{
 		try
 		{
 			_BackgroundMusic = AudioSystem.getClip();
+			_CrashSound = AudioSystem.getClip();
 		}
 		catch (Exception e)
 		{
@@ -25,9 +27,11 @@ public class SoundController {
 		}
 		
 		AudioInputStream _BackgroundMusicStream = GetStream("src/music/Background.wav");
+		AudioInputStream _CrashMusicStream = GetStream("src/music/Crash.wav");
 		
 		try {
 			_BackgroundMusic.open(_BackgroundMusicStream);
+			_CrashSound.open(_CrashMusicStream);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -52,4 +56,13 @@ public class SoundController {
         }
 		return null;
     }
+
+	public void PlayCrash() {
+		if(!_CrashSound.isRunning())
+		{
+			_CrashSound.setFramePosition(0);
+			_CrashSound.start();
+		}
+		
+	}
 }

@@ -3,6 +3,7 @@ package com.Viper.Debug;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 
 import javax.swing.ImageIcon;
@@ -17,6 +18,8 @@ public class ShowImageForm {
 	JPanel panel;
 	
 	JLabel label;
+	
+	Shape s;
 	
 	public ShowImageForm(ImageIcon i)
 	{
@@ -45,6 +48,7 @@ public class ShowImageForm {
 		label.repaint();
 	}
 	
+	@SuppressWarnings("serial")
 	public ShowImageForm(GeneralPath i)
 	{
 		panel = new JPanel() {
@@ -67,6 +71,37 @@ public class ShowImageForm {
 		
 		panel.setVisible(true);
 		frame.setVisible(true);
+	}
+	
+	@SuppressWarnings("serial")
+	public ShowImageForm(Shape i)
+	{
+		s = i;
+		panel = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g)
+			{
+				Graphics2D g2d = (Graphics2D) g;
+				
+				g2d.setPaint(Color.BLUE);
+				
+				g2d.fill(s);
+			}
+		};
+		frame.setLocationRelativeTo(null);
+		
+		frame.setSize(1000, 1000);
+		panel.setSize(1000, 1000);
+		
+		frame.getContentPane().add(panel);
+		
+		panel.setVisible(true);
+		frame.setVisible(true);
+	}
+	
+	public void update(Shape s)
+	{
+		this.s = s;
 	}
 
 }

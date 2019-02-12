@@ -1,11 +1,5 @@
 package com.Viper.Control;
 
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import com.Viper.Control.Networking.GameClient;
 import com.Viper.Control.Networking.Session;
 import com.Viper.Model.Vehicle;
@@ -115,6 +109,12 @@ public class Player {
 	
 	public void setSpriteIndex(int index) {
 		_SpriteIndex = index;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return _Name;
 	}
 
 }

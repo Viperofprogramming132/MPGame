@@ -14,11 +14,11 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.Viper.Control.Controller;
 
+@SuppressWarnings("serial")
 public class Server extends JPanel implements ActionListener{
 
 	private final String MAPLOCATION = "src/imgs/maptextures/";

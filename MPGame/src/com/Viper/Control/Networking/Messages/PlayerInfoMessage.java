@@ -2,6 +2,7 @@ package com.Viper.Control.Networking.Messages;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class PlayerInfoMessage extends Message implements Serializable{
 
 	private int _SelectedVehicleIndex;

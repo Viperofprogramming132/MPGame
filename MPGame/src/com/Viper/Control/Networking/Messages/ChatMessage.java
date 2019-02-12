@@ -2,6 +2,11 @@ package com.Viper.Control.Networking.Messages;
 
 public class ChatMessage extends Message{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8531752199021412254L;
+	
 	private String _Message;
 	public ChatMessage(MESSAGETYPE type, int playerID, String message) {
 		super(type, playerID);

@@ -3,6 +3,7 @@ package com.Viper.Control.Networking.Messages;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 public class LobbyInfoMessage extends Message implements Serializable{
 
 	private int _MapIndex;

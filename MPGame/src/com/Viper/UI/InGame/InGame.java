@@ -3,6 +3,7 @@ package com.Viper.UI.InGame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,24 +12,23 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
 
+@SuppressWarnings("serial")
 public class InGame extends JPanel implements ActionListener, KeyListener, MouseMotionListener{
 	
 	private int WORLD_SIZE_X;
 	private int WORLD_SIZE_Y;
 	
-	private final int VIEWPOINT_SIZE_X = 1000;
+	private final int VIEWPOINT_SIZE_X = 1500;
 	private final int VIEWPOINT_SIZE_Y = 1000;
 
 	private double _imageAngleRad;
@@ -36,6 +36,8 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 	private Player _nonRemotePlayer;
 	
 	private ArrayList<InGameLabel> _VehicleLabels = new ArrayList<>();
+	
+	private ArrayList<Checkpoint> _CheckPointLabels = new ArrayList<>();
 	
 	private Image _Map;
 	
@@ -46,11 +48,13 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 	{
 		_nonRemotePlayer = nonRemotePlayer;
 		
+		Controller.GetController().get_GameController().StartGame();
+		
 		addMouseMotionListener(this);
 		addKeyListener(this);
 		
 		CreateVehicles();
-		CreateHUD();
+		DrawCheckpoints();
 		
 		setLayout(null);
 		setOpaque(false);
@@ -58,11 +62,21 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		
 		setVisible(true);
 		
-		Controller.GetController().get_GameController().StartGame();
+		
 	}
 	
-	private void CreateHUD() {
-				
+	private void DrawCheckpoints()
+	{
+		ArrayList<Point> checkpoints = Controller.GetController().get_GameController().get_CheckPointLocations();
+		
+		for (Point location : checkpoints)
+		{
+			Checkpoint cp = new Checkpoint(false, location);
+			_CheckPointLabels.add(cp);
+			add(cp);
+		}
+		
+		_CheckPointLabels.get(0).setStartFinish(true);
 	}
 	
 	
@@ -70,6 +84,8 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
+		
+
 		
 		DrawMap(g);
 	}
@@ -129,7 +145,7 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 
 			_VehicleLabels.get(i).setVisible(true);
 			
-			_VehicleLabels.get(i).setLocation(410, 710);
+			_VehicleLabels.get(i).setLocation(Controller.GetController().get_GameController().get_PlayerStartLocations().get(_nonRemotePlayer.getID() - 1));
 		}
 		
 	}
@@ -142,7 +158,6 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 				((InGameLabel) vehicle).CalcNextFrame();
 			}
 		});
-		
 		
 		repaint();		
 	}
@@ -165,18 +180,18 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
-		if((int) e.getKeyCode() == KeyEvent.VK_W)
+		if(e.getKeyCode() == KeyEvent.VK_W)
 		{
 			_nonRemotePlayer.getSprite().get_Vehicle().set_forward(true);
 		}
-		if((int) e.getKeyCode() == KeyEvent.VK_S)
+		if(e.getKeyCode() == KeyEvent.VK_S)
 		{
 			_nonRemotePlayer.getSprite().get_Vehicle().set_backwards(true);
 		}
-		if((int) e.getKeyCode() == KeyEvent.VK_SPACE)
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
 		{
-			_nonRemotePlayer.getSprite().getLocation().x += 10;
-			_nonRemotePlayer.getSprite().getLocation().y += 10;
+			if(Controller.GetController().OpenJOptionsPane("Do you wish to quit?") == JOptionPane.YES_OPTION)
+				System.exit(0);
 		}
 			
 	}
@@ -184,11 +199,11 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 	@Override
 	public void keyReleased(KeyEvent e) {
 		
-		if((int) e.getKeyCode() == KeyEvent.VK_W)
+		if(e.getKeyCode() == KeyEvent.VK_W)
 		{
 			_nonRemotePlayer.getSprite().get_Vehicle().set_forward(false);
 		}
-		if((int) e.getKeyCode() == KeyEvent.VK_S)
+		if(e.getKeyCode() == KeyEvent.VK_S)
 		{
 			_nonRemotePlayer.getSprite().get_Vehicle().set_backwards(false);
 		}
@@ -210,5 +225,10 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 	public ArrayList<InGameLabel> getVehicleLabels()
 	{
 		return _VehicleLabels;
+	}
+	
+	public ArrayList<Checkpoint> get_CheckPointLabels()
+	{
+		return _CheckPointLabels;
 	}
 }

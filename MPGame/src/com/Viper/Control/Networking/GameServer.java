@@ -20,8 +20,6 @@ import javafx.collections.ObservableList;
 
 
 public class GameServer {
-	
-
 
 	private final ArrayList<Socket> _ClientSockets = new ArrayList<>();
 	private final ArrayList<Session> _ClientSessions = new ArrayList<>();
@@ -175,8 +173,6 @@ public class GameServer {
     
     public boolean SendGameStartToClients()
     {
-    	boolean allReady = true;
-    	
     	for (int i = 0; i < _ClientSessions.size(); i++)
     	{
     		if (!_ClientSessions.get(i).getPlayer().isReady())

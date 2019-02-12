@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 import com.Viper.Control.Controller;
 
+@SuppressWarnings("serial")
 public class MainMenu extends JPanel implements ActionListener{
 
 	private JButton _Connect;

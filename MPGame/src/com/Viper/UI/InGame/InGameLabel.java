@@ -1,24 +1,18 @@
 package com.Viper.UI.InGame;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.io.IOException;
 
-import javax.sound.midi.Receiver;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import com.Viper.Control.Player;
 import com.Viper.Model.Vehicle;
 
+@SuppressWarnings("serial")
 public class InGameLabel extends JLabel{
 	
 	private Vehicle _VehicleLogic;
@@ -101,7 +95,7 @@ public class InGameLabel extends JLabel{
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		
 		g2d.rotate(_VehicleLogic.getAngle(), x, y);
-        
+		
 		super.paintComponent(g);
 	}
 }
