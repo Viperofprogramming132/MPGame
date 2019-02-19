@@ -223,6 +223,24 @@ public class GameServer {
     	}
     }
     
+    public void UDPBroadcastMessage(Session requestingSession, Message msg)
+    {
+    	for (Session _Session : _ClientSessions)
+    	{
+    		if(_Session != requestingSession)
+    		{
+    			if(_Session.SendUDPMessage(msg))
+    			{
+    				System.out.println("Broadcast Sent");
+    			}
+    			else
+    			{
+    				System.out.println("Broadcast failed to Send");
+    			}
+    		}
+    	}
+    }
+    
     public String GetLocalHostName() {
         String address = "";
         try {

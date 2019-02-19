@@ -11,11 +11,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -90,6 +88,7 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		DrawMap(g);
 	}
 	
+	//https://gamedev.stackexchange.com/questions/44256/how-to-add-a-scrolling-camera-to-a-2d-java-game?fbclid=IwAR1B_fd0fsW1EtDklCge7D8VsdFOdWQ9TBtHCs_IxpkgyLXenniI9M2Hnoc
 	private void DrawMap(Graphics g)
 	{
 		Graphics2D g2d = (Graphics2D) g;

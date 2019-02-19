@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
 
-public class TwoToneImageFilter implements BufferedImageOp{
+public class TwoToneImageFilter implements BufferedImageOp {
 	 Color target;
 	    int tolerance;
 

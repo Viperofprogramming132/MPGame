@@ -75,13 +75,14 @@ public class UIControl extends JFrame implements ActionListener {
 			
 			@Override
 			public void windowClosing(WindowEvent e) {
-
+				windowClosed(e);
+				System.exit(0);
 			}
 			
 			@Override
 			public void windowClosed(WindowEvent e) {
 				Controller.GetController().Disconnect(true);
-				return;
+				System.exit(0);
 			}
 			
 			@Override
@@ -210,7 +211,6 @@ public class UIControl extends JFrame implements ActionListener {
 
 	public void OpenMessagePane(String text, String windowName, int MessageType ) {
 		JOptionPane.showMessageDialog(this, text, windowName, MessageType);
-		
 	}
 	public int OpenOptionsPanel(String text)
 	{

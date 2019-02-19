@@ -12,8 +12,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import org.omg.CORBA._IDLTypeStub;
-
 import com.Viper.Control.CollisionManagment;
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
@@ -128,6 +126,7 @@ public class Vehicle
 		_VehicleLabel.setLocation(location);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void CalculateNewLocation() {
 		Point localLocation = _VehicleLabel.getLocation();
 		double y = (_Speed / 2) * Math.sin(_Angle);

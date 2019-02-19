@@ -27,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -59,8 +58,6 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	private DefaultListModel<Player> _PlayerListModel;
 	
 	private double _imageAngleRad = 0;
-	
-	private Image _backgroundImage;
 	
 	
 	public Lobby(boolean host)
@@ -108,7 +105,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	{
 		if(_PlayerView == null)
 		{
-			_PlayerListModel = new DefaultListModel();
+			_PlayerListModel = new DefaultListModel<Player>();
 			_PlayerView = new JList<Player>(_PlayerListModel);
 		}
 		
@@ -117,18 +114,6 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_PlayerView.setLocation(585, 15);
 		_PlayerView.setSize(100, 500);
 		
-	}
-	
-	private void getBackgroundMap(int map)
-	{
-		File files = new File("src/imgs/maptextures/");
-		
-		try {
-			_backgroundImage = ReadImage(files.listFiles()[map]);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	private void PopulateVehicleSelector() {
