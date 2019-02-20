@@ -260,7 +260,10 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
 		{
 			if(Controller.GetController().OpenJOptionsPane("Do you wish to quit?") == JOptionPane.YES_OPTION)
+			{
+				Controller.GetController().Disconnect(true);
 				System.exit(0);
+			}
 		}
 			
 	}

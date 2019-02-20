@@ -1,5 +1,7 @@
 package com.Viper.Control;
 
+import java.util.jar.Attributes.Name;
+
 import com.Viper.Control.Networking.GameClient;
 import com.Viper.Model.Vehicle;
 import com.Viper.UI.InGame.InGameLabel;
@@ -158,6 +160,14 @@ public class Player {
 	}
 	
 	/**
+	 * Just sets the ready state to a specific state
+	 * @param ready The state to set ready to
+	 */
+	public void setReady(boolean ready) {
+		this._Ready = ready;
+	}
+	
+	/**
 	 * Gets the Sprite Index
 	 * @return The index of the selected Sprite by this player
 	 */
@@ -180,7 +190,10 @@ public class Player {
 	@Override
 	public String toString()
 	{
-		return _Name + " " + _Ready;
+		if (_Ready)
+			return _Name + " " + "Ready";
+		else
+			return _Name + " " + "Not Ready";
 	}
 
 }

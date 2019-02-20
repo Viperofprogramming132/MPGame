@@ -194,7 +194,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		Controller.GetController().getPlayers().forEach(s -> _PlayerListModel.addElement(s));
 		
 		_PlayerView.setLocation(585, 15);
-		_PlayerView.setSize(100, 500);
+		_PlayerView.setSize(200, 500);
 		
 	}
 	

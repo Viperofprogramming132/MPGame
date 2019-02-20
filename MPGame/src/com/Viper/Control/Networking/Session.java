@@ -188,7 +188,7 @@ public class Session implements Runnable{
                 if(msg.getType() == MESSAGETYPE.PLAYERINFO)
                 {
                 	PlayerInfoMessage plInfo = (PlayerInfoMessage) msg;
-                	_Player.setReady();
+                	_Player.setReady(plInfo.is_Ready());
                 	_Player.setName(plInfo.get_Name());
                 	_Player.setSpriteIndex(plInfo.get_SelectedVehicleIndex());
                 	

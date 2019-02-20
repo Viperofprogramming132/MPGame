@@ -95,20 +95,20 @@ public class Controller {
 			public void onChanged(Change<? extends Player> e) {
 				while(e.next())
 				{
+					if(e.wasReplaced())
+					{
+						if (e.getAddedSubList().get(0).isReady())
+							_UIController.AddChatMessage(e.getAddedSubList().get(0), e.getAddedSubList().get(0).getName() + " is now ready");
+						else
+							_UIController.AddChatMessage(e.getAddedSubList().get(0), e.getAddedSubList().get(0).getName() + " is now not ready");
+					}
 					if(e.wasAdded())
 					{
 						if(_PlayerCount != _ObPlayers.size())
 							_UIController.PlayerConnectedUpdate(e.getAddedSubList().get(0), true);
 						else
 						{
-							if(!e.getAddedSubList().get(0).isReady())
-							{
-								_UIController.PlayerNameUpdate(e.getAddedSubList().get(0));
-							}
-							else
-							{
-								_UIController.AddChatMessage(e.getAddedSubList().get(0), e.getAddedSubList().get(0).getName() + " is now ready");
-							}
+							System.out.println("Player name update");
 						}
 					}
 				}
@@ -126,7 +126,7 @@ public class Controller {
 		_UIController = UIControl.GetInstance();
 		
 		_UIController.OpenMainMenu();
-		_SoundControl.StartBackgroundMusic();
+		//_SoundControl.StartBackgroundMusic();
 	}
 	
 	/**
@@ -325,12 +325,13 @@ public class Controller {
 	}
 
 	/**
-	 * Shows a message pane that notifies the user the server has closed and attempts to reopen the main menu after closing connections
+	 * Shows a message pane that notifies the user the server has closed and attempts to close connections and exit the application
 	 */
 	public void ServerClosed() {
-		_UIController.OpenMessagePane("Server Was Closed Returning to the Main Menu", "Server Closed", JOptionPane.WARNING_MESSAGE);
+		_UIController.OpenMessagePane("Server Was Closed. Closing the game", "Server Closed", JOptionPane.WARNING_MESSAGE);
 		Disconnect(false);		
-		_UIController.OpenMainMenu();
+		
+		System.exit(0);
 	}
 	
 	/**

@@ -144,7 +144,6 @@ public class GameClient {
 	    			
 	    			_ServerDown = true;
 	    			TryCloseCurrentConnection(false);
-	    			_ErrorCount = 0;
 	    			
 	    			Controller.GetController().ServerClosed();
 	    		}
@@ -152,7 +151,7 @@ public class GameClient {
 	    		{
 	    			PlayerInfoMessage msg = (PlayerInfoMessage) serverResponse;
 	    			Player p = new Player(msg.get_PlayerID(), true);
-	    			p.setReady();
+	    			p.setReady(msg.is_Ready());
 	    			p.setSpriteIndex(msg.get_SelectedVehicleIndex());
 	    			p.setName(msg.get_Name());
 	    			
@@ -311,6 +310,7 @@ public class GameClient {
 	                }
 	            }
 	        }
+	        //Required to stop over spamming messages
 	    	try {
 				Thread.sleep(5);
 			} catch (InterruptedException e) {
@@ -429,6 +429,7 @@ public class GameClient {
         //Close any connections already open
         if (TryCloseCurrentConnection(true)) {
             try {
+            	_ErrorCount = 0;
                 _ServerCon = new Socket(serverAddress, portNumber);
                 
                 //Set the timeout to 50 seconds
@@ -522,6 +523,9 @@ public class GameClient {
      */
     public boolean TryCloseCurrentConnection(boolean sayGoodBye) {
         boolean result = true;
+        
+        //Stops the loops
+        _ErrorCount = 10;
         if (_ServerCon != null) {
             if (!_ServerCon.isClosed()) {
             	

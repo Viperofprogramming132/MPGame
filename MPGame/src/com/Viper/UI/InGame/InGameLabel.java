@@ -114,7 +114,7 @@ public class InGameLabel extends JLabel{
 	}
 	
 	/**
-	 * Paints the sprite at the rotation using speed over quaility
+	 * Paints the sprite at the rotation using speed over quality
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
