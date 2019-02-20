@@ -8,12 +8,33 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-
+/**
+ * Controls all the sound system for the game
+ * 
+ * All clips are played from here
+ * @author Aidan
+ *
+ */
 public class SoundController {
 
+	/**
+	 * Clip containing the background music
+	 * 
+	 * Thanks for the Copyright free music from:
+	 * https://ozzed.net/
+	 * https://soundcloud.com/ozzednet/lingonsalt
+	 */
 	private Clip _BackgroundMusic;
+	
+	/**
+	 * The Clip of the sound that is played when the vehicle crashes
+	 */
 	private Clip _CrashSound;
 	
+	/**
+	 * Creates a sound controller 
+	 * Attempts to read in the sound clips
+	 */
 	public SoundController()
 	{
 		try
@@ -37,6 +58,9 @@ public class SoundController {
 		}
 	}
 	
+	/**
+	 * Starts the background music on a continuous loop
+	 */
 	public void StartBackgroundMusic()
 	{
 		if(!_BackgroundMusic.isRunning())
@@ -45,6 +69,11 @@ public class SoundController {
 		}
 	}
 	
+	/**
+	 * Gets the audio input stream from the file input
+	 * @param f The file to open to read the audio file
+	 * @return The AudioInputStream of the given file
+	 */
     private AudioInputStream GetStream(String f)
     {
         try
@@ -57,6 +86,9 @@ public class SoundController {
 		return null;
     }
 
+    /**
+     * Plays the crash sound
+     */
 	public void PlayCrash() {
 		if(!_CrashSound.isRunning())
 		{

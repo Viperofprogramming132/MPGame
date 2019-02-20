@@ -18,20 +18,58 @@ import javax.swing.JPanel;
 
 import com.Viper.Control.Controller;
 
+/**
+ * The Panel that deals with the UI of hosting a server
+ * 
+ * @author Aidan
+ *
+ */
 @SuppressWarnings("serial")
 public class Server extends JPanel implements ActionListener{
 
+	/**
+	 * The location for the maps
+	 */
 	private final String MAPLOCATION = "src/imgs/maptextures/";
 	
+	/**
+	 * The button that gets the previous map
+	 */
 	private JButton _Left;
+	
+	/**
+	 * The button that gets the next map
+	 */
 	private JButton _Right;
+	
+	/**
+	 * The button that creates the server
+	 */
 	private JButton _Create;
+	
+	/**
+	 * The button that exits the application
+	 */
 	private JButton _Exit;
+	
+	/**
+	 * The Container the contains all the components
+	 */
 	private JPanel _MenuContainer;
 	
+	/**
+	 * The array of possible maps that can be chosen from
+	 */
 	private File[] _PossibleMaps;
+	
+	/**
+	 * The currently shown map. This map will be used on creation of the server
+	 */
 	private Integer _ShownMap = 0;
 	
+	/**
+	 * Creates a Server UI used to host a game
+	 */
 	public Server()
 	{
 		this.setLayout(null);
@@ -48,16 +86,20 @@ public class Server extends JPanel implements ActionListener{
 		this.setVisible(true);
 	}
 	
+	/**
+	 * Populates the map with the files in the folder
+	 */
 	private void PopulateMapSelector() {
-		File test = new File(MAPLOCATION);
-		
-		for (int i = 0; i < test.list().length; i++)
-		{
-			System.out.println(test.list()[i]);
-		}
-		_PossibleMaps = test.listFiles();
+		File MapFiles = new File(MAPLOCATION);
+		_PossibleMaps = MapFiles.listFiles();
 	}
 	
+	/**
+	 * Reads and image from the specified file
+	 * @param path The File to read the image from
+	 * @return The image that was read
+	 * @throws IOException If the file fails to read the image due to it not existing or read/write error
+	 */
 	private Image ReadImage(File path) throws IOException
 	{
 		BufferedImage img = ImageIO.read(path);
@@ -65,6 +107,9 @@ public class Server extends JPanel implements ActionListener{
 		return i;
 	}
 	
+	/**
+	 * Handles displaying of the correct map
+	 */
 	private void DisplayMap()
 	{
 		if (_ShownMap > _PossibleMaps.length - 1)
@@ -79,6 +124,9 @@ public class Server extends JPanel implements ActionListener{
 		repaint();
 	}
 	
+	/**
+	 * Paints the correct map in the middle of the screen at a scaled size
+	 */
 	@Override
 	public void paintComponent(Graphics g)
 	{
@@ -93,6 +141,9 @@ public class Server extends JPanel implements ActionListener{
 		}
 	}
 
+	/**
+	 * Populates the container with all the components
+	 */
 	private void PopulateContainer() {
 		_MenuContainer = new JPanel();
 		
@@ -107,38 +158,49 @@ public class Server extends JPanel implements ActionListener{
 		_MenuContainer.setOpaque(false);
 	}
 
+	/**
+	 * Makes all the components
+	 */
 	private void MakeButtons() {
 		_Left = new JButton("<");
 		_Right = new JButton(">");
 		_Create = new JButton("Enter Server Lobby");
 		_Exit = new JButton("X");
 		
+		//Sets the size
 		_Left.setSize(50, 50);
 		_Right.setSize(50, 50);
 		_Create.setSize(200, 75);
 		_Exit.setSize(50, 50);
 		
+		//Sets the location
 		_Left.setLocation(15, 220);
 		_Right.setLocation(520, 220);
 		_Create.setLocation(200, 475);
 		_Exit.setLocation(520, 498);
 		
+		//Sets the font
 		_Left.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Right.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Create.setFont(new Font("Consolas",Font.BOLD, 12));
 		_Exit.setFont(new Font("Consolas",Font.BOLD, 12));
 		
+		//Sets the background
 		_Left.setBackground(Color.WHITE);
 		_Right.setBackground(Color.WHITE);
 		_Create.setBackground(Color.WHITE);
 		_Exit.setBackground(Color.WHITE);
 		
+		//Adds action listeners
 		_Left.addActionListener(this);
 		_Right.addActionListener(this);
 		_Create.addActionListener(this);
 		_Exit.addActionListener(this);
 	}
 
+	/**
+	 * The action when buttons are pressed
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		

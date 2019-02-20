@@ -152,7 +152,7 @@ public class GameClient {
 	    		{
 	    			PlayerInfoMessage msg = (PlayerInfoMessage) serverResponse;
 	    			Player p = new Player(msg.get_PlayerID(), true);
-	    			p.setReady(msg.is_Ready());
+	    			p.setReady();
 	    			p.setSpriteIndex(msg.get_SelectedVehicleIndex());
 	    			p.setName(msg.get_Name());
 	    			

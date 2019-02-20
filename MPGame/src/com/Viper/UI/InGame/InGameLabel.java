@@ -12,21 +12,45 @@ import javax.swing.JLabel;
 import com.Viper.Control.Player;
 import com.Viper.Model.Vehicle;
 
+/**
+ * Creates a label that is the vehicle sprite
+ * 
+ * Controls rotation of the vehicle but no logic
+ * @author Aidan
+ *
+ */
 @SuppressWarnings("serial")
 public class InGameLabel extends JLabel{
 	
+	/**
+	 * Link to the logic of the vehicle
+	 */
 	private Vehicle _VehicleLogic;
 	
+	/**
+	 * The sprite that should be displayed
+	 */
 	private Image _VehicleSprite;
 	
+	/**
+	 * The player that this sprite is controlled by
+	 */
 	private Player _Player;
 	
+	/**
+	 * Creates a InGameLabel which is the sprite of the players vehicles
+	 * @param player The player that this sprite belongs to
+	 */
 	public InGameLabel(Player player)
 	{
 		_Player = player;		
 		setOpaque(false);
 	}
 	
+	/**
+	 * Creates the vehicle logic and sets all the data that it needs to
+	 * @param game The link back to its parent
+	 */
 	public void Initialise(InGame game)
 	{
 		_VehicleLogic = new Vehicle();
@@ -40,14 +64,16 @@ public class InGameLabel extends JLabel{
 		_VehicleLogic.setCurrentGame(game);
 	}
 	
+	/**
+	 * @return The logic for the vehicle
+	 */
 	public Vehicle get_Vehicle() {
 		return _VehicleLogic;
 	}
 
-	public void set_Vehicle(Vehicle _Vehicle) {
-		this._VehicleLogic = _Vehicle;
-	}
-
+	/**
+	 * Gets the sprite that should be displayed and sets the label to the correct size to be able to contain it with any rotaion
+	 */
 	public void setStartImage() {
 		try {
 			_VehicleSprite = _VehicleLogic.ReadVehicleImage(_Player.getSpriteIndex());
@@ -79,11 +105,17 @@ public class InGameLabel extends JLabel{
 		setVisible(true);
 	}
 	
+	/**
+	 * Tells the vehicle logic to attempt to move
+	 */
 	public void CalcNextFrame()
 	{
 		_VehicleLogic.Step();
 	}
 	
+	/**
+	 * Paints the sprite at the rotation using speed over quaility
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		

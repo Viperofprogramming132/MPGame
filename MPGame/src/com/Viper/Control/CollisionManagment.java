@@ -171,7 +171,6 @@ public class CollisionManagment {
 	 * @param VehicleRotations All the vehicle rotations to check (ensuring itself is not included) it should be 1 to 1 with vehicle locations
 	 * @return True if there is a collision false if not
 	 */
-	@SuppressWarnings("static-access")
 	public boolean CheckVehicleCollision(Point RequestingVehicleLocation, double RequestingVehicleRotation, Point[] VehicleLocations, Double[] VehicleRotations)
 	{
 		boolean result = false;

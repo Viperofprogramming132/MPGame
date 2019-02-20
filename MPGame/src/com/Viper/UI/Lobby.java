@@ -34,32 +34,108 @@ import javax.swing.event.DocumentListener;
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
 
+/**
+ * The JPanel that deals with the lobby UI
+ * @author Aidan
+ *
+ */
 @SuppressWarnings("serial")
 public class Lobby extends JPanel implements ActionListener, MouseMotionListener{
 	
+	/**
+	 * The location of the vehicles so the system can get the image out for vehicle selection
+	 */
 	private final String VEHICLELOCATION = "src/imgs/vehicles/";
 	
+	/**
+	 * The button to go left on the vehicle selection
+	 */
 	private JButton _Left;
+	
+	/**
+	 * The button to go right on the vehicle selection
+	 */
 	private JButton _Right;
+	
+	/**
+	 * The button to start the game if host or ready if not
+	 */
 	private JButton _Create;
+	
+	/**
+	 * The button to exit the program
+	 */
 	private JButton _Exit;
+	
+	/**
+	 * The Container that contains all the components 
+	 */
 	private JPanel _MenuContainer;
+	
+	/**
+	 * The List view of all the player names and if they are ready or not
+	 */
 	private JList<Player> _PlayerView;
+	
+	/**
+	 * The Chat box
+	 */
 	private JTextArea _Chat;
+	
+	/**
+	 * The box to type a message into for the chat
+	 */
 	private JTextField _Message;
+	
+	/**
+	 * The button to send a message to the chat
+	 */
 	private JButton _Send;
+	
+	/**
+	 * The scroll pane allowing for scrolling of the chat and automatically scrolling to the bottom
+	 */
 	private JScrollPane _ChatScrollPane;
+	
+	/**
+	 * The Players name (Changeable)
+	 */
 	private JTextField _PlayerName;
+	
+	/**
+	 * The label to tell the user this is their name and to change it
+	 */
 	private JLabel _PlayerNameLabel;
 	
+	/**
+	 * Array of file of the possible vehicles
+	 */
 	private File[] _PossibleVehicles;
+	
+	/**
+	 * The currently shown vehicle when the game starts this is the one that will be chosen
+	 */
 	private Integer _ShownVehicles = 0;
+	
+	/**
+	 * If the user of the lobby is the host
+	 */
 	private final boolean _Host;
+	
+	/**
+	 * The list that is input to the JList
+	 */
 	private DefaultListModel<Player> _PlayerListModel;
 	
+	/**
+	 * The angle the vehicle is rotated to
+	 */
 	private double _imageAngleRad = 0;
 	
-	
+	/**
+	 * Creates a lobby UI
+	 * @param host If the user is hosting the server
+	 */
 	public Lobby(boolean host)
 	{
 		this.setLayout(null);
@@ -86,6 +162,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		this.setVisible(true);
 	}
 	
+	/**
+	 * List the current players that are in the lobby to the chat on player join
+	 */
 	private void ListCurrentPlayers() {
 		ArrayList<Player> players = new ArrayList<>(Controller.GetController().getPlayers());
 		
@@ -101,6 +180,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		AppendChat(playerList);
 	}
 
+	/**
+	 * Populates the player view that displays the current players
+	 */
 	private void PopulatePlayerView()
 	{
 		if(_PlayerView == null)
@@ -116,16 +198,20 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		
 	}
 	
+	/**
+	 * Gets all the files in the vehicle location folder
+	 */
 	private void PopulateVehicleSelector() {
-		File test = new File(VEHICLELOCATION);
-		
-		for (int i = 0; i < test.list().length; i++)
-		{
-			System.out.println(test.list()[i]);
-		}
-		_PossibleVehicles = test.listFiles();
+		File vehicleFiles = new File(VEHICLELOCATION);
+		_PossibleVehicles = vehicleFiles.listFiles();
 	}
 	
+	/**
+	 * Attempts to read an image from the specified file
+	 * @param path The file that the system will attempt to read
+	 * @return The image that is read
+	 * @throws IOException If the file fails to read the image due to it not existing or read/write error
+	 */
 	private Image ReadImage(File path) throws IOException
 	{
 		BufferedImage img = ImageIO.read(path);
@@ -133,8 +219,12 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		return i;
 	}
 	
+	/**
+	 * Controls the displaying of the vehicle
+	 */
 	private void DisplayVehicle()
 	{
+		//Stop out of range errors
 		if (_ShownVehicles > _PossibleVehicles.length - 1)
 		{
 			_ShownVehicles = 0;
@@ -149,6 +239,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		repaint();
 	}
 	
+	/**
+	 * Repaints the vehicle at the new rotation according to the mouse location 
+	 */
 	@Override
 	public void paintComponent(Graphics g)
 	{
@@ -177,6 +270,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
         g2d.setTransform(oldAT);
 	}
 
+	/**
+	 * Populates the container with all the components
+	 */
 	private void PopulateContainer() {
 		_MenuContainer = new JPanel();
 		
@@ -197,6 +293,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_MenuContainer.setOpaque(false);
 	}
 
+	/**
+	 * Makes all the components
+	 */
 	private void MakeButtons() {
 		_Left = new JButton("<");
 		_Right = new JButton(">");
@@ -214,6 +313,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		
 		_ChatScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
+		//Set sizes
 		_Left.setSize(50, 50);
 		_Right.setSize(50, 50);
 		_Create.setSize(200, 75);
@@ -223,7 +323,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Chat.setSize(600, 500);
 		_ChatScrollPane.setSize(600, 500);
 		_PlayerName.setSize(100, 30);
+		_PlayerNameLabel.setSize(300, 30);
 		
+		//Set locations
 		_Left.setLocation(15, 220);
 		_Right.setLocation(520, 220);
 		_Create.setLocation(200, 475);
@@ -232,8 +334,10 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Message.setLocation(880, 525);
 		_Chat.setLocation(880, 15);
 		_ChatScrollPane.setLocation(880, 15);
-		_PlayerName.setLocation(200, 15);
+		_PlayerName.setLocation(200, 30);
+		_PlayerNameLabel.setLocation(150, 5);
 		
+		//Set fonts
 		_Left.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Right.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Create.setFont(new Font("Consolas",Font.BOLD, 12));
@@ -243,7 +347,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_Chat.setFont(new Font("Consolas",Font.PLAIN, 12));
 		_ChatScrollPane.setFont(new Font("Consolas",Font.PLAIN, 12));
 		_PlayerName.setFont(new Font("Consolas",Font.PLAIN, 12));
+		_PlayerNameLabel.setFont(new Font("Consolas",Font.PLAIN, 12));
 		
+		//Set backgrounds
 		_Left.setBackground(Color.WHITE);
 		_Right.setBackground(Color.WHITE);
 		_Create.setBackground(Color.WHITE);
@@ -254,6 +360,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		_ChatScrollPane.setBackground(Color.WHITE);
 		_PlayerName.setBackground(Color.WHITE);
 		
+		//Add listeners
 		_Left.addActionListener(this);
 		_Right.addActionListener(this);
 		_Create.addActionListener(this);
@@ -280,11 +387,12 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 			}
 		});
 
+		//Autoscroll
 		_ChatScrollPane.setAutoscrolls(true);
 		_Chat.setAutoscrolls(true);
 		
 		
-		
+		//Setup chat
 		_Chat.setEditable(false);
 		_Chat.setLineWrap(true);
 		_Message.addMouseListener(new MouseAdapter() {
@@ -298,6 +406,9 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		});
 	}
 
+	/**
+	 * Action performed for button presses
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -340,27 +451,38 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		
 	}
 
+	/**
+	 * Stub override
+	 */
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
+	/**
+	 * Gets the mouse location according to the location of the centre of the vehicle selection 
+	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
         double dx = e.getX() - 300;
         double dy = e.getY() - 250;
         _imageAngleRad = Math.atan2(dy, dx);
         repaint();
-		
 	}
 	
+	/**
+	 * Appends the message to the end of the chat
+	 * @param toAppend The message to add to the chat
+	 */
 	public void AppendChat(String toAppend)
 	{
 		_Chat.append("\n" + toAppend);
 		_Chat.setCaretPosition(_Chat.getDocument().getLength());
 	}
 	
+	/**
+	 * Updates the player list with the player
+	 * @param p The player to update or add
+	 */
 	public void UpdateList(Player p)
 	{
 		boolean match = false;

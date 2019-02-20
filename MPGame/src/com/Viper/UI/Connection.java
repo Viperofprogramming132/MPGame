@@ -15,16 +15,48 @@ import javax.swing.SwingConstants;
 
 import com.Viper.Control.Controller;
 
+/**
+ * The UI Panel that deals with the connection to a server
+ * @author Aidan
+ *
+ */
 @SuppressWarnings("serial")
 public class Connection extends JPanel implements ActionListener{
 	
+	/**
+	 * The text field that contains the IP address
+	 */
 	private JTextField _ServerIP;
+	
+	/**
+	 * The Error message incase the connection did not go through
+	 */
 	private JLabel _ErrorMessage;
+	
+	/**
+	 * The label that tells the user what the text box is for
+	 */
 	private JLabel _ServerIPTile;
+	
+	/**
+	 * The Title of the page 
+	 */
 	private JLabel _TitleLabel;
+	
+	/**
+	 * The container of the components
+	 */
 	private JPanel _Container;
+	
+	/**
+	 * The connect button to attempt a connection
+	 */
 	private JButton _Connect;
 	
+	/**
+	 * Creates a new JPanel of connection to be displayed on a frame
+	 * @param autoConnect
+	 */
 	public Connection(boolean autoConnect) {
         setLayout(null);
         
@@ -39,6 +71,9 @@ public class Connection extends JPanel implements ActionListener{
         }
 	}
 	
+	/**
+	 * Populates the JPanel Container with all the components 
+	 */
 	private void PopulateContainer() {
 		_Container = new JPanel();
 		
@@ -54,6 +89,9 @@ public class Connection extends JPanel implements ActionListener{
 		_Container.setOpaque(false);
 	}
 	
+	/**
+	 * Makes all the components
+	 */
 	private void MakeContent() {
 		_ServerIP = new JTextField("127.0.0.1");
 		_TitleLabel = new JLabel("Connection Settings");
@@ -94,6 +132,7 @@ public class Connection extends JPanel implements ActionListener{
 		_ErrorMessage.setFont(new Font("Consolas",Font.PLAIN , 14));
 		_ErrorMessage.setForeground(Color.RED);
 		
+		//Add mouse listener to remove the text from the text box when clicked
 		_ServerIP.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e)
@@ -110,6 +149,9 @@ public class Connection extends JPanel implements ActionListener{
         setVisible(true);
 	}
 	
+	/**
+	 * Attempts a connection to the server with the IP address given
+	 */
 	private void Connect()
 	{
 		if(Controller.GetController().ConnectToServer(_ServerIP.getText()))
@@ -118,6 +160,9 @@ public class Connection extends JPanel implements ActionListener{
 			_ErrorMessage.setText("Error: Unable to Connect to server");
 	}
 
+	/**
+	 * When a button is pressed this event is called
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		

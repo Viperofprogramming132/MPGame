@@ -20,28 +20,77 @@ import javax.swing.JPanel;
 import com.Viper.Control.Controller;
 import com.Viper.Control.Player;
 
+/**
+ * The in game panel that controls the map drawing
+ * 
+ * Has references to the labels that are the vehicles
+ * @author Aidan
+ *
+ */
 @SuppressWarnings("serial")
 public class InGame extends JPanel implements ActionListener, KeyListener, MouseMotionListener{
 	
+	/**
+	 * The size of the image in pixel on the X
+	 */
 	private int WORLD_SIZE_X;
+	
+	/**
+	 * The size of the image in pixel on the Y
+	 */
 	private int WORLD_SIZE_Y;
 	
+	/**
+	 * The size of the screen so the camera scrolls with the player on the X
+	 */
 	private final int VIEWPOINT_SIZE_X = 1500;
+	
+	/**
+	 * The size of the screen so the camera scrolls with the player on the Y
+	 */
 	private final int VIEWPOINT_SIZE_Y = 1000;
 
+	/**
+	 * The angle that the mouse is pointing to from the local players vehicle
+	 */
 	private double _imageAngleRad;
 	
+	/**
+	 * The link to the local player
+	 */
 	private Player _nonRemotePlayer;
 	
+	/**
+	 * The list of all the vehicles
+	 */
 	private ArrayList<InGameLabel> _VehicleLabels = new ArrayList<>();
 	
+	/**
+	 * The list of all the checkpoints
+	 */
 	private ArrayList<Checkpoint> _CheckPointLabels = new ArrayList<>();
 	
+	/**
+	 * The image of the map
+	 */
 	private Image _Map;
 	
+	/**
+	 * The cameras X coordinate
+	 */
 	private int _camX;
+	
+	/**
+	 * The cameras Y coordinate
+	 */
 	private int _camY;
 	
+	/**
+	 * Creates a InGame JPanel that will draw the map ready for the game
+	 * 
+	 * Contains all the vehicles
+	 * @param nonRemotePlayer The player that is the local player for the user to control
+	 */
 	public InGame(Player nonRemotePlayer)
 	{
 		_nonRemotePlayer = nonRemotePlayer;
@@ -59,10 +108,11 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		setFocusable(true);
 		
 		setVisible(true);
-		
-		
 	}
 	
+	/**
+	 * Draws the checkpoints at the specified locations according to the location got from the properties file
+	 */
 	private void DrawCheckpoints()
 	{
 		ArrayList<Point> checkpoints = Controller.GetController().get_GameController().get_CheckPointLocations();
@@ -77,18 +127,22 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		_CheckPointLabels.get(0).setStartFinish(true);
 	}
 	
-	
+	/**
+	 * Paints all the components
+	 */
 	@Override
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		
-
-		
 		DrawMap(g);
 	}
 	
-	//https://gamedev.stackexchange.com/questions/44256/how-to-add-a-scrolling-camera-to-a-2d-java-game?fbclid=IwAR1B_fd0fsW1EtDklCge7D8VsdFOdWQ9TBtHCs_IxpkgyLXenniI9M2Hnoc
+	/**
+	 * Draws the map and transforms it with the player
+	 * Uses a system laid out:
+	 * https://gamedev.stackexchange.com/questions/44256/how-to-add-a-scrolling-camera-to-a-2d-java-game?fbclid=IwAR1B_fd0fsW1EtDklCge7D8VsdFOdWQ9TBtHCs_IxpkgyLXenniI9M2Hnoc
+	 * @param g The graphics of the panel
+	 */
 	private void DrawMap(Graphics g)
 	{
 		Graphics2D g2d = (Graphics2D) g;
@@ -125,6 +179,9 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		g2d.drawImage(_Map, 0, 0, WORLD_SIZE_X, WORLD_SIZE_Y, null);
 	}
 
+	/**
+	 * Creates all the vehicle sprites for the players
+	 */
 	private void CreateVehicles() {
 		
 		ArrayList<Player> temp = Controller.GetController().get_GameController().getPlayers();
@@ -135,13 +192,10 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 			
 			_VehicleLabels.get(i).Initialise(this);
 			
-			//TODO: Change later
 			this.add(_VehicleLabels.get(i));
-			
-			
+						
 			_VehicleLabels.get(i).setStartImage();
 			
-
 			_VehicleLabels.get(i).setVisible(true);
 			
 			_VehicleLabels.get(i).setLocation(Controller.GetController().get_GameController().get_PlayerStartLocations().get(_nonRemotePlayer.getID() - 1));
@@ -149,6 +203,9 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		
 	}
 	
+	/**
+	 * Makes all the vehicles calculate their next frame and redraws the map around that
+	 */
 	public void Frame()
 	{
 		Arrays.stream(_VehicleLabels.toArray()).forEach(vehicle -> {
@@ -161,10 +218,16 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		repaint();		
 	}
 
+	/**
+	 * Stub override
+	 */
 	@Override
 	public void mouseDragged(MouseEvent e) {		
 	}
 
+	/**
+	 * Get the angle the mouse is compared to the player in radians
+	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		this.requestFocus();
@@ -176,6 +239,13 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
         _nonRemotePlayer.getSprite().get_Vehicle().setAngle(_imageAngleRad);
 	}
 
+	/**
+	 * When a key is pressed checks if it is:
+	 * 
+	 * W: To move the vehicle forward
+	 * S: To move the vehicle backwards
+	 * ESC: To ask the user if they wish to quit
+	 */
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
@@ -195,6 +265,12 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 			
 	}
 
+	/**
+	 * When a key is release checks if it is:
+	 * 
+	 * W: To stop moving the vehicle forward
+	 * S: To stop moving the vehicle backwards
+	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
 		
@@ -209,23 +285,33 @@ public class InGame extends JPanel implements ActionListener, KeyListener, Mouse
 		
 	}
 
+	/**
+	 * Stub override
+	 */
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 	
+	/**
+	 * Stub override
+	 */
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	}
+	
+	/**
+	 * Gets the vehicle labels of all the vehicles
+	 * @return All the vehicles labels
+	 */
 	public ArrayList<InGameLabel> getVehicleLabels()
 	{
 		return _VehicleLabels;
 	}
 	
+	/**
+	 * Gets all the checkpoints
+	 * @return All the checkpoint labels
+	 */
 	public ArrayList<Checkpoint> get_CheckPointLabels()
 	{
 		return _CheckPointLabels;

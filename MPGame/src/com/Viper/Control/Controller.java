@@ -102,9 +102,13 @@ public class Controller {
 						else
 						{
 							if(!e.getAddedSubList().get(0).isReady())
+							{
 								_UIController.PlayerNameUpdate(e.getAddedSubList().get(0));
+							}
 							else
-								_UIController.AddChatMessage(e.getAddedSubList().get(0).getName() + " is now ready");
+							{
+								_UIController.AddChatMessage(e.getAddedSubList().get(0), e.getAddedSubList().get(0).getName() + " is now ready");
+							}
 						}
 					}
 				}
@@ -197,7 +201,7 @@ public class Controller {
 	 */
 	public void SendReady()
 	{
-		_Client.getLocalPlayer().setReady(true);
+		_Client.getLocalPlayer().setReady();
 	}
 	
 	/**

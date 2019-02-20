@@ -149,11 +149,10 @@ public class Player {
 	}
 	
 	/**
-	 * Sets the users ready state and broadcasts it to the other clients if the user is the local one
-	 * @param Ready If the user is ready or not
+	 * Sets the users ready state to the opposite and broadcasts it to the other clients if the user is the local one
 	 */
-	public void setReady(boolean Ready) {
-		this._Ready = Ready;
+	public void setReady() {
+		this._Ready = !_Ready;
 		if (_Client != null)
 			_Client.PlayerUpdate(_SpriteIndex);
 	}

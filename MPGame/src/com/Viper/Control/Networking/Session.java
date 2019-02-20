@@ -18,6 +18,13 @@ import com.Viper.Control.Networking.Messages.MESSAGETYPE;
 import com.Viper.Control.Networking.Messages.Message;
 import com.Viper.Control.Networking.Messages.PlayerInfoMessage;
 
+/**
+ * Takes all messages on both UDP and TCP and broadcasts them out to all the other users
+ * TCP is used for the majority of traffic
+ * UDP is used for the game positions
+ * @author Aidan
+ *
+ */
 public class Session implements Runnable{
     /**
      * Socket towards the connected client.
@@ -32,32 +39,76 @@ public class Session implements Runnable{
      */
     private volatile ObjectInputStream _ObjIn;
     
+    /**
+     * The output stream used for the UDP connection to serialise the message objects
+     */
     private volatile ObjectOutputStream _UDPObjOut;
     
+    /**
+     * The input stream used for the UDP connection to deserialise the message objects
+     */
     private volatile ObjectInputStream _UDPObjIn;
     
+    /**
+     * The output stream used to send the byte array down the UDP socket
+     */
     private volatile ByteArrayOutputStream _ByteOut;
     
+    /**
+     * The input stream used by UDP to get the data from the client to deserialise
+     */
     private volatile ByteArrayInputStream _ByteIn;
     
+    /**
+     * The UDP socket that is bound to the client
+     */
     private DatagramSocket _UDPSocket;
     
+    /**
+     * If the client has said goodbye to the server (aka disconnected)
+     */
     private boolean _GoodBye = false;
     
+    /**
+     * if the server is shutting down
+     */
     private boolean _ShuttingDown = false;
     
+    /**
+     * The count of errors thrown if it goes above 5 the user is disconnected
+     */
     private int _ExceptionCounter = 0;
     
+    /**
+     * The link back to the lobby to broadcast to other clients
+     */
 	private GameServer _Lobby;
 	
+	/**
+	 * The player that this session is running for
+	 */
 	private Player _Player;
 	
+	/**
+	 * The IP address of the client that is connected to this session
+	 */
 	private InetAddress _IPAddress;
 	
+	/**
+	 * The port that UDP will use to receive and send data down
+	 */
 	private int _Port;
 	
+	/**
+	 * The UDP Thread that listens for updates of the vehicles position
+	 */
 	private Thread _UDPListener;
     
+	/**
+	 * Creates a instance of Session and creates a new player and port for them to use
+	 * @param ClientSocket The socket that this session will be using
+	 * @param lobby The server that this session is hosted on
+	 */
     public Session(Socket ClientSocket, GameServer lobby)
     {
     	_ClientSocket = ClientSocket;
@@ -67,6 +118,10 @@ public class Session implements Runnable{
     	_Port = 8888 + (_Player.getID() * 2);
     }
     
+    /**
+     * Attempts to open the input and output stream on the TCP socket and creates the UDP streams
+     * @return true if opened successfully otherwise false
+     */
 	public boolean OpenStreams() {
 		boolean success = true;
 		try {
@@ -83,6 +138,9 @@ public class Session implements Runnable{
 		return success;
 	}
 
+	/**
+	 * The Main listening thread that reads in all the TCP traffic
+	 */
 	@Override
 	public void run() {
 		
@@ -124,20 +182,23 @@ public class Session implements Runnable{
                 if (msg.getType() == MESSAGETYPE.CHATMESSAGE)
                 {
                 	BroadcastMessage(msg);
+                	continue;
                 }
                 
                 if(msg.getType() == MESSAGETYPE.PLAYERINFO)
                 {
                 	PlayerInfoMessage plInfo = (PlayerInfoMessage) msg;
-                	_Player.setReady(plInfo.is_Ready());
+                	_Player.setReady();
                 	_Player.setName(plInfo.get_Name());
                 	_Player.setSpriteIndex(plInfo.get_SelectedVehicleIndex());
                 	
                 	BroadcastMessage(plInfo);
+                	continue;
                 }
                 if(msg.getType() == MESSAGETYPE.GAMESTART)
                 {
                 	_Lobby.SendGameStartToClients();
+                	continue;
                 }
 			}
 			catch (Exception e)
@@ -168,6 +229,10 @@ public class Session implements Runnable{
 		
 	}
 	
+	/**
+	 * The UDP reading thread reads in bytes
+	 * Deserialises and broadcasts them out to the other users
+	 */
 	private Runnable ReceiveStatus = () -> {
 		while (!_GoodBye && !_ShuttingDown && _ExceptionCounter < 5) {
 			byte[] buffer = new byte[1000];
@@ -201,6 +266,9 @@ public class Session implements Runnable{
 		}
 	};
 	
+	/**
+	 * Sends a player info message out to all the current players
+	 */
 	public void SendPlayer()
 	{
 		PlayerInfoMessage msg = new PlayerInfoMessage(MESSAGETYPE.PLAYERINFO, _Player.getID());
@@ -212,14 +280,27 @@ public class Session implements Runnable{
 		BroadcastMessage(msg);
 	}
 
+	/**
+	 * Broadcasts a TCP message out to all the other sessions connected to the server
+	 * @param msg The message to be sent
+	 */
 	private void BroadcastMessage(Message msg) {
 		_Lobby.BroadcastMessage(this, msg);
 	}
 	
+	/**
+	 * Broadcasts a UDP message out to all the other sessions connected to the server
+	 * @param msg The message to be sent
+	 */
 	private void BroadcastUDPMessage(Message msg) {
 		_Lobby.UDPBroadcastMessage(this, msg);
 	}
 
+	/**
+	 * Sends the information about the current lobby to the client. sends:
+	 * Current players
+	 * Selected map
+	 */
 	private void SendLobbyInfo() {
 		
 		LobbyInfoMessage msg = new LobbyInfoMessage(MESSAGETYPE.LOBBYINFO, _Player.getID());
@@ -238,6 +319,11 @@ public class Session implements Runnable{
 		SendMessage(msg);
 	}
 
+	/**
+	 * Sends a TCP message to the client
+	 * @param msg The message to be sent
+	 * @return True if the message was sent otherwise false
+	 */
 	public synchronized boolean SendMessage(Message msg) {
 		
 		if(_GoodBye)
@@ -276,23 +362,35 @@ public class Session implements Runnable{
 		return result;
 	}
 
+	/**
+	 * Tells the session that the server is shutting down
+	 */
 	public void ServerShutDownNotification() {
 		_ShuttingDown = true;		
 	}
 	
+	/**
+	 * Gets the socket that this session uses
+	 * @return
+	 */
 	public Socket getSocket()
 	{
 		return _ClientSocket;
 	}
 
+	/**
+	 * Gets the player that this session is running for 
+	 * @return
+	 */
 	public Player getPlayer() {
 		return _Player;
 	}
 
-	public void setPlayer(Player _Player) {
-		this._Player = _Player;
-	}
-
+	/**
+	 * Sends a UDP message to the client
+	 * @param msg The message to be sent
+	 * @return True if the message is sent otherwise false
+	 */
 	public synchronized boolean SendUDPMessage(Message msg) {
 		
 		if(_GoodBye)
@@ -309,6 +407,7 @@ public class Session implements Runnable{
 		
 		boolean result = true;
 		
+		//Reset the streams
 		try {
 			_ByteOut = new ByteArrayOutputStream();
 			_UDPObjOut = new ObjectOutputStream(_ByteOut);
@@ -317,6 +416,7 @@ public class Session implements Runnable{
 			e2.printStackTrace();
 		}
 		
+		//serialise to an object
 		try {
 			_UDPObjOut.writeObject(msg);
 			_UDPObjOut.flush();
@@ -325,8 +425,10 @@ public class Session implements Runnable{
 			e1.printStackTrace();
 		}
 		
+		//Write the byte array to a buffer
 		byte[] buffer = _ByteOut.toByteArray();
 		
+		//Send the data
 		try {
 			synchronized (this) {
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length, _IPAddress, _Port);
