@@ -126,7 +126,7 @@ public class Controller {
 		_UIController = UIControl.GetInstance();
 		
 		_UIController.OpenMainMenu();
-		//_SoundControl.StartBackgroundMusic();
+		_SoundControl.StartBackgroundMusic();
 	}
 	
 	/**
