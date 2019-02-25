@@ -172,6 +172,7 @@ public class Lobby extends JPanel implements ActionListener{
 	 */
 	private void DisplayVehicle(int toChange)
 	{
+		//change the first player
 		if(toChange == 1)
 		{
 			//Stop out of range errors
@@ -186,6 +187,7 @@ public class Lobby extends JPanel implements ActionListener{
 			
 			Controller.GetController().getPlayers().get(0).setSpriteIndex(_ShownVehicles1);
 		}
+		//change player 2
 		else
 		{
 			//Stop out of range errors

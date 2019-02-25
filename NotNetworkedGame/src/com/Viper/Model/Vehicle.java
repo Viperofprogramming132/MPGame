@@ -19,6 +19,11 @@ import com.Viper.UI.InGame.Checkpoint;
 import com.Viper.UI.InGame.InGame;
 import com.Viper.UI.InGame.InGameLabel;
 
+/**
+ * The logic of the vehicle calculates speed and position of the vehicle
+ * @author Aidan
+ *
+ */
 public class Vehicle 
 {
 	/**
@@ -260,7 +265,7 @@ public class Vehicle
 	}
 
 	/**
-	 * Sets a speed limit to 50 Pixels per frame
+	 * Sets a speed limit to 20 Pixels per frame
 	 * If forward then move up to that speed limit increasing accelerating slower as speed increases
 	 * If backwards then move back 5 pixels per frame
 	 * @param reverse If the vehicle should reverse

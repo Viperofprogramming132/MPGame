@@ -153,7 +153,7 @@ public class Game implements ActionListener {
 	
 	/**
 	 * Opens the properties file of the current map if it exists
-	 * Contains 8 start locations for the 8 players
+	 * Contains 2 start locations for the 2 players
 	 * Contains 2 checkpoint locations the first being the start
 	 * Adds them all the the relevant arrays
 	 */

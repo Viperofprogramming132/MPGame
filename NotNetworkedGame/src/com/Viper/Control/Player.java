@@ -31,7 +31,6 @@ public class Player {
 	 */
 	private Vehicle _VehicleLogic;
 	
-	
 	/**
 	 * The index of the sprite the player is using
 	 */

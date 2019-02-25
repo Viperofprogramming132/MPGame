@@ -19,11 +19,6 @@ import com.Viper.Control.Controller;
 public class MainMenu extends JPanel implements ActionListener{
 
 	/**
-	 * The button that take the user to the connection screen
-	 */
-	private JButton _Connect;
-	
-	/**
 	 * The button that takes the user to the Server screen
 	 */
 	private JButton _Create;
@@ -62,7 +57,6 @@ public class MainMenu extends JPanel implements ActionListener{
 		_MenuContainer.setBounds(0, 0, 400, 300);
 		
 		_MenuContainer.setLayout(null);
-		_MenuContainer.add(_Connect);
 		_MenuContainer.add(_Create);
 		_MenuContainer.add(_Exit);
 		_MenuContainer.setVisible(true);
@@ -72,32 +66,26 @@ public class MainMenu extends JPanel implements ActionListener{
 	 * Makes the components to be displayed
 	 */
 	private void MakeMenuButtons() {
-		_Connect = new JButton("Connect To Server");
-		_Create = new JButton("Create Server");
+		_Create = new JButton("Start Game");
 		_Exit = new JButton("Exit");
 		
 		//Set size
-		_Connect.setSize(300, 75);
-		_Create.setSize(300, 75);
+		_Create.setSize(300, 165);
 		_Exit.setSize(300, 75);
 		
 		//Set location
-		_Connect.setLocation(50, 10);
-		_Create.setLocation(50, 100);
+		_Create.setLocation(50, 10);
 		_Exit.setLocation(50, 190);
 		
 		//Set font
-		_Connect.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Create.setFont(new Font("Consolas",Font.BOLD, 14));
 		_Exit.setFont(new Font("Consolas",Font.BOLD, 14));
 		
 		//Set background
-		_Connect.setBackground(Color.WHITE);
 		_Create.setBackground(Color.WHITE);
 		_Exit.setBackground(Color.WHITE);
 		
 		//Add action listeners
-		_Connect.addActionListener(this);
 		_Create.addActionListener(this);
 		_Exit.addActionListener(this);
 	}
@@ -117,7 +105,7 @@ public class MainMenu extends JPanel implements ActionListener{
             //Select the action based on button's text
             switch (temp.getText())
             {
-                case "Create Server":
+                case "Start Game":
                     Controller.GetController().EnterLobby();
                 	System.out.println("CREATE");
                     break;

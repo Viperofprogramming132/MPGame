@@ -122,6 +122,11 @@ public class CollisionManagment {
         _MapSW.execute();
 	}
 	
+	/**
+	 * Calculate the size to scale the collision map to
+	 * 
+	 * Sets scaleX and scaleY
+	 */
 	private void CalcScale()
 	{
 		Rectangle2D mapBounds = _MapArea.getBounds2D();
@@ -130,7 +135,8 @@ public class CollisionManagment {
 		double mapY = mapBounds.getHeight();
 		
 		double frameX = UIControl.GetInstance().getWidth();
-		double frameY = UIControl.GetInstance().getHeight();
+		//-25 for the menu bar
+		double frameY = UIControl.GetInstance().getHeight() - 25;
 		
 		_ScaleX = frameX / mapX;
 		_ScaleY = frameY / mapY;
@@ -284,7 +290,7 @@ public class CollisionManagment {
     	//Checks if the Vehicle collides with the collision map created of the map
     	//+1 on both due to shrinking of the map for speed causes so offset issues this is to fix them
     	//ONLY CHECKS THE MAP
-    	result = _VehicleArea.intersects(PI, (x / _ScaleX) + 1, (y / _ScaleY) + 4, 1, 1);
+    	result = _VehicleArea.intersects(PI, (x / _ScaleX) + 1, (y / _ScaleY) + 1, 1, 1);
     	
     	return result; 
     }
@@ -292,7 +298,7 @@ public class CollisionManagment {
     /**
      * Scales the image by a multiplier
      * @param sbi The image to scale
-     * @param scale The scale in which to use in deciaml 0.5 for half 2 for twice the size
+     * @param scale The scale in which to use in decimal 0.5 for half 2 for twice the size
      * @return The scaled image
      */
     public BufferedImage scale(BufferedImage sbi, double scale) {
