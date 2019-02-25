@@ -1,7 +1,5 @@
 package com.Viper.Control;
 
-import java.util.jar.Attributes.Name;
-
 import com.Viper.Control.Networking.GameClient;
 import com.Viper.Model.Vehicle;
 import com.Viper.UI.InGame.InGameLabel;
