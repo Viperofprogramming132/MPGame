@@ -1,5 +1,7 @@
 package com.Viper.Control;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
 import com.Viper.Sound.SoundController;
@@ -174,5 +176,12 @@ public class Controller {
 	public void PlayerCrashSound() {
 		_SoundControl.PlayCrash();
 		
+	}
+	
+	public File[] getResourceFolderFiles (String folder) {
+	    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+	    URL url = loader.getResource(folder);
+	    String path = url.getPath();
+	    return new File(path).listFiles();
 	}
 }

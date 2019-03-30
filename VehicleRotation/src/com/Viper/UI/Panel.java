@@ -26,7 +26,7 @@ public class Panel extends JPanel implements KeyListener{
 		setFocusable(true);
 		setOpaque(false);
 		addKeyListener(this);
-		Label = new VehicleLabel("src/vehicles");
+		Label = new VehicleLabel();
 		
 		add(Label);
 	}

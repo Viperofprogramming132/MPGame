@@ -47,8 +47,8 @@ public class SoundController {
 			e.printStackTrace();
 		}
 		
-		AudioInputStream _BackgroundMusicStream = GetStream("src/music/Background.wav");
-		AudioInputStream _CrashMusicStream = GetStream("src/music/Crash.wav");
+		AudioInputStream _BackgroundMusicStream = GetStream("/music/Background.wav");
+		AudioInputStream _CrashMusicStream = GetStream("/music/Crash.wav");
 		
 		try {
 			_BackgroundMusic.open(_BackgroundMusicStream);
@@ -78,7 +78,7 @@ public class SoundController {
     {
         try
         {
-        	return AudioSystem.getAudioInputStream(new File(f));
+        	return AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(f));
         } catch (UnsupportedAudioFileException | IOException e)
         {
             e.printStackTrace();

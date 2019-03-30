@@ -37,10 +37,6 @@ public class VehicleLabel extends JLabel implements ActionListener{
 	 */
 	private int _displayedImage = 1;
 	
-	/**
-	 * The file location that the vehicle can be found in
-	 */
-	File _vehicleLocation;
 	
 	/**
 	 * The timer that causes smooth turning
@@ -51,12 +47,10 @@ public class VehicleLabel extends JLabel implements ActionListener{
 	 * Creates a vehicle label with the images from the given vehicle location
 	 * @param vehicleLocation The location of the images to use to create the vehicle
 	 */
-	public VehicleLabel(String vehicleLocation)
+	public VehicleLabel()
 	{
 		this.setSize(50,50);
 		this.setVisible(true);
-		
-		_vehicleLocation = new File(vehicleLocation);
 		
 		_rotateTimer = new Timer(33, this);
 		_rotateTimer.start();
@@ -64,13 +58,13 @@ public class VehicleLabel extends JLabel implements ActionListener{
 	
 	/**
 	 * Attempts to read an image from the specified file
-	 * @param path The file that the system will attempt to read
+	 * @param location The file that the system will attempt to read
 	 * @return The image that is read
 	 * @throws IOException If the file fails to read the image due to it not existing or read/write error
 	 */
-	private Image ReadImage(File path) throws IOException
+	private Image ReadImage(String location) throws IOException
 	{
-		BufferedImage img = ImageIO.read(path);
+		BufferedImage img = ImageIO.read(this.getClass().getResourceAsStream(location));
 		Image i = new ImageIcon(img).getImage();
 		return i;
 	}
@@ -120,7 +114,7 @@ public class VehicleLabel extends JLabel implements ActionListener{
 	private void drawVehicle() {
 		
 		//Ensures no overflow or out of range
-		if(_displayedImage == _vehicleLocation.listFiles().length)
+		if(_displayedImage == 16)
 			_displayedImage = 1;
 		if(_displayedImage == 0)
 			_displayedImage = 16;
@@ -128,7 +122,7 @@ public class VehicleLabel extends JLabel implements ActionListener{
 		
 		//Sets the icon based off the selected vehicle
 		try {
-			setIcon(new ImageIcon(ReadImage(new File(_vehicleLocation.getAbsoluteFile() + "/Car" + _displayedImage + ".png"))));
+			setIcon(new ImageIcon(ReadImage("/Car" + _displayedImage + ".png")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

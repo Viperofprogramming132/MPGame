@@ -142,16 +142,14 @@ public class Lobby extends JPanel implements ActionListener{
 	 * Gets all the files in the vehicle location folder
 	 */
 	private void PopulateVehicleSelector() {
-		File vehicleFiles = new File(VEHICLELOCATION);
-		_PossibleVehicles = vehicleFiles.listFiles();
+		_PossibleVehicles = Controller.GetController().getResourceFolderFiles("imgs/vehicles");
 	}
 	
 	/**
 	 * Populates the map with the files in the folder
 	 */
 	private void PopulateMapSelector() {
-		File MapFiles = new File(MAPLOCATION);
-		_PossibleMaps = MapFiles.listFiles();
+		_PossibleMaps = Controller.GetController().getResourceFolderFiles("imgs/maptextures");;
 	}
 	
 	/**
@@ -160,9 +158,9 @@ public class Lobby extends JPanel implements ActionListener{
 	 * @return The image that is read
 	 * @throws IOException If the file fails to read the image due to it not existing or read/write error
 	 */
-	private Image ReadImage(File path) throws IOException
+	private Image ReadImage(String path) throws IOException
 	{
-		BufferedImage img = ImageIO.read(path);
+		BufferedImage img = ImageIO.read(this.getClass().getResourceAsStream(path));
 		Image i = new ImageIcon(img).getImage();
 		return i;
 	}
@@ -235,7 +233,7 @@ public class Lobby extends JPanel implements ActionListener{
 		
 		Image i = null;
 		try {
-			i = ReadImage(_PossibleVehicles[_ShownVehicles1]);
+			i = ReadImage("/imgs/vehicles/Car" + _ShownVehicles1 + ".png");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -245,7 +243,7 @@ public class Lobby extends JPanel implements ActionListener{
         
 		i = null;
 		try {
-			i = ReadImage(_PossibleVehicles[_ShownVehicles2]);
+			i = ReadImage("/imgs/vehicles/Car" + _ShownVehicles2 + ".png");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -256,7 +254,7 @@ public class Lobby extends JPanel implements ActionListener{
 		i = null;
 		
 		try {
-			i = ReadImage(_PossibleMaps[_ShownMap]);
+			i = ReadImage("/imgs/maptextures/map" + _ShownMap + ".png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

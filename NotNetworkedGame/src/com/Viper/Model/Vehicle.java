@@ -404,9 +404,7 @@ public class Vehicle
 	 */
 	public Image ReadVehicleImage(int startImage) throws IOException
 	{
-		File f = new File("src/imgs/vehicles");
-		
-		BufferedImage img = ImageIO.read(f.listFiles()[startImage]);
+		BufferedImage img = ImageIO.read(this.getClass().getResourceAsStream("/imgs/vehicles/Car" + startImage + ".png"));
 		Image i = new ImageIcon(img).getImage();
 		return i;
 	}

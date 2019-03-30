@@ -88,11 +88,9 @@ public class Game implements ActionListener {
 	 */
 	public void StartGame()
 	{
-		File f = new File("src/imgs/maptextures/");
-		File[] files = f.listFiles();
 		try {
-			set_Map(ImageIO.read(files[Controller.GetController().get_SelectedMap()]));
-			_MapName = files[Controller.GetController().get_SelectedMap()].getName();
+			set_Map(ImageIO.read(this.getClass().getResourceAsStream("/imgs/maptextures/map" + Controller.GetController().get_SelectedMap() + ".png")));
+			_MapName = Controller.GetController().getResourceFolderFiles("imgs/maptextures/")[Controller.GetController().get_SelectedMap()].getName();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -163,49 +161,47 @@ public class Game implements ActionListener {
 		_PlayerStartLocations = new ArrayList<Point>();
 		_CheckPointLocations = new ArrayList<Point>();
 		
-		if (new File("src/properties/" + _MapName + ".properties").exists())
-		{
-			try {
-				InputStream in = new FileInputStream("src/properties/" + _MapName + ".properties");
-				
-				prop.load(in);
-				
-				Point p = new Point();
-				
-				p.x = Integer.parseInt(prop.getProperty("startloc1x"));
-				p.y = Integer.parseInt(prop.getProperty("startloc1y"));
-				
-				_PlayerStartLocations.add(p);
-				
-				p = new Point();
-				
-				p.x = Integer.parseInt(prop.getProperty("startloc2x"));
-				p.y = Integer.parseInt(prop.getProperty("startloc2y"));
-				
-				_PlayerStartLocations.add(p);
-				p = new Point();
-				
-				p.x = Integer.parseInt(prop.getProperty("checkpoint1locx"));
-				p.y = Integer.parseInt(prop.getProperty("checkpoint1locy"));
-				
-				_CheckPointLocations.add(p);
-				p = new Point();
-				
-				p.x = Integer.parseInt(prop.getProperty("checkpoint2locx"));
-				p.y = Integer.parseInt(prop.getProperty("checkpoint2locy"));
-				
-				_CheckPointLocations.add(p);
-				
-				_TrackWidth = Integer.parseInt(prop.getProperty("TrackWidth"));
-				
-				
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			InputStream in = this.getClass().getResourceAsStream("/properties/" + _MapName + ".properties");
+			
+			prop.load(in);
+			
+			Point p = new Point();
+			
+			p.x = Integer.parseInt(prop.getProperty("startloc1x"));
+			p.y = Integer.parseInt(prop.getProperty("startloc1y"));
+			
+			_PlayerStartLocations.add(p);
+			
+			p = new Point();
+			
+			p.x = Integer.parseInt(prop.getProperty("startloc2x"));
+			p.y = Integer.parseInt(prop.getProperty("startloc2y"));
+			
+			_PlayerStartLocations.add(p);
+			p = new Point();
+			
+			p.x = Integer.parseInt(prop.getProperty("checkpoint1locx"));
+			p.y = Integer.parseInt(prop.getProperty("checkpoint1locy"));
+			
+			_CheckPointLocations.add(p);
+			p = new Point();
+			
+			p.x = Integer.parseInt(prop.getProperty("checkpoint2locx"));
+			p.y = Integer.parseInt(prop.getProperty("checkpoint2locy"));
+			
+			_CheckPointLocations.add(p);
+			
+			_TrackWidth = Integer.parseInt(prop.getProperty("TrackWidth"));
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 	}
 	
 	/**
