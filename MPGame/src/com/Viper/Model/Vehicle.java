@@ -406,9 +406,9 @@ public class Vehicle
 	 */
 	public Image ReadVehicleImage(int startImage) throws IOException
 	{
-		File f = new File("src/imgs/vehicles");
+		ArrayList<String> pos = Controller.GetController().PopulateVehicleSelector();
 		
-		BufferedImage img = ImageIO.read(f.listFiles()[startImage]);
+		BufferedImage img = ImageIO.read(this.getClass().getResourceAsStream("/imgs/vehicles/" + pos.get(startImage)));
 		Image i = new ImageIcon(img).getImage();
 		return i;
 	}

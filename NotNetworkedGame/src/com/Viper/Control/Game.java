@@ -90,7 +90,7 @@ public class Game implements ActionListener {
 	{
 		try {
 			set_Map(ImageIO.read(this.getClass().getResourceAsStream("/imgs/maptextures/map" + Controller.GetController().get_SelectedMap() + ".png")));
-			_MapName = Controller.GetController().getResourceFolderFiles("imgs/maptextures/")[Controller.GetController().get_SelectedMap()].getName();
+			_MapName = "map" + Controller.GetController().get_SelectedMap() + ".png";
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

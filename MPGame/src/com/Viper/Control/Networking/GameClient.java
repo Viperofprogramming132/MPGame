@@ -185,6 +185,7 @@ public class GameClient {
 	    	}
 	    	catch (Exception e)
 	    	{
+	    		e.printStackTrace();
 	    		_ErrorCount++;
 	    	}
     	}

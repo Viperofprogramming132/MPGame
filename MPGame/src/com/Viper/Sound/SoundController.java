@@ -1,7 +1,8 @@
 package com.Viper.Sound;
 
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -47,8 +48,8 @@ public class SoundController {
 			e.printStackTrace();
 		}
 		
-		AudioInputStream _BackgroundMusicStream = GetStream("src/music/Background.wav");
-		AudioInputStream _CrashMusicStream = GetStream("src/music/Crash.wav");
+		AudioInputStream _BackgroundMusicStream = GetStream("/music/Background.wav");
+		AudioInputStream _CrashMusicStream = GetStream("/music/Crash.wav");
 		
 		try {
 			_BackgroundMusic.open(_BackgroundMusicStream);
@@ -78,7 +79,9 @@ public class SoundController {
     {
         try
         {
-        	return AudioSystem.getAudioInputStream(new File(f));
+        	InputStream in = this.getClass().getResourceAsStream(f);
+        	InputStream bufferIn = new BufferedInputStream(in);
+        	return AudioSystem.getAudioInputStream(bufferIn);
         } catch (UnsupportedAudioFileException | IOException e)
         {
             e.printStackTrace();

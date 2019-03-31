@@ -8,8 +8,12 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -26,16 +30,6 @@ import com.Viper.Control.Controller;
  */
 @SuppressWarnings("serial")
 public class Lobby extends JPanel implements ActionListener{
-	
-	/**
-	 * The location of the vehicles so the system can get the image out for vehicle selection
-	 */
-	private final String VEHICLELOCATION = "src/imgs/vehicles/";
-	
-	/**
-	 * The location for the maps
-	 */
-	private final String MAPLOCATION = "src/imgs/maptextures/";
 	
 	/**
 	 * The button to go left on the vehicle selection for player 1
@@ -96,7 +90,7 @@ public class Lobby extends JPanel implements ActionListener{
 	/**
 	 * Array of file of the possible vehicles
 	 */
-	private File[] _PossibleVehicles;
+	private ArrayList<String> _PossibleVehicles;
 	
 	/**
 	 * The currently shown vehicle when the game starts this is the one that will be chosen for player 1
@@ -111,7 +105,7 @@ public class Lobby extends JPanel implements ActionListener{
 	/**
 	 * The array of possible maps that can be chosen from
 	 */
-	private File[] _PossibleMaps;
+	private ArrayList<String> _PossibleMaps;
 	
 	/**
 	 * The currently shown map. This map will be used on creation of the server
@@ -142,14 +136,44 @@ public class Lobby extends JPanel implements ActionListener{
 	 * Gets all the files in the vehicle location folder
 	 */
 	private void PopulateVehicleSelector() {
-		_PossibleVehicles = Controller.GetController().getResourceFolderFiles("imgs/vehicles");
+		BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/properties/PossibleVehicles.txt")));
+		
+		_PossibleVehicles = new ArrayList<String>();
+		String line = null;
+		do
+		{
+			try {
+				line = br.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(line != null)
+			{
+				_PossibleVehicles.add(line);
+			}
+		} while (line != null);
 	}
 	
 	/**
 	 * Populates the map with the files in the folder
 	 */
 	private void PopulateMapSelector() {
-		_PossibleMaps = Controller.GetController().getResourceFolderFiles("imgs/maptextures");;
+		BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/properties/PossibleMaps.txt")));
+		
+		_PossibleMaps = new ArrayList<String>();
+		String line = null;
+		do
+		{
+			try {
+				line = br.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(line != null)
+			{
+				_PossibleMaps.add(line);
+			}
+		} while (line != null);
 	}
 	
 	/**
@@ -174,13 +198,13 @@ public class Lobby extends JPanel implements ActionListener{
 		if(toChange == 1)
 		{
 			//Stop out of range errors
-			if (_ShownVehicles1 > _PossibleVehicles.length - 1)
+			if (_ShownVehicles1 > _PossibleVehicles.size() - 1)
 			{
 				_ShownVehicles1 = 0;
 			}
 			if (_ShownVehicles1 < 0)
 			{
-				_ShownVehicles1 = _PossibleVehicles.length - 1;
+				_ShownVehicles1 = _PossibleVehicles.size() - 1;
 			}
 			
 			Controller.GetController().getPlayers().get(0).setSpriteIndex(_ShownVehicles1);
@@ -189,13 +213,13 @@ public class Lobby extends JPanel implements ActionListener{
 		else
 		{
 			//Stop out of range errors
-			if (_ShownVehicles2 > _PossibleVehicles.length - 1)
+			if (_ShownVehicles2 > _PossibleVehicles.size() - 1)
 			{
 				_ShownVehicles2 = 0;
 			}
 			if (_ShownVehicles2 < 0)
 			{
-				_ShownVehicles2 = _PossibleVehicles.length - 1;
+				_ShownVehicles2 = _PossibleVehicles.size() - 1;
 			}
 			
 			Controller.GetController().getPlayers().get(1).setSpriteIndex(_ShownVehicles2);
@@ -209,13 +233,13 @@ public class Lobby extends JPanel implements ActionListener{
 	 */
 	private void DisplayMap()
 	{
-		if (_ShownMap > _PossibleMaps.length - 1)
+		if (_ShownMap > _PossibleMaps.size() - 1)
 		{
 			_ShownMap = 0;
 		}
 		if (_ShownMap < 0)
 		{
-			_ShownMap = _PossibleMaps.length - 1;
+			_ShownMap = _PossibleMaps.size() - 1;
 		}
 		
 		repaint();

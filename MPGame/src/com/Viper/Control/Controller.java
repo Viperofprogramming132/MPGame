@@ -1,5 +1,10 @@
 package com.Viper.Control;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 import com.Viper.Control.Networking.GameClient;
@@ -89,6 +94,7 @@ public class Controller {
 	 */
 	private Controller()
 	{
+		_SoundControl = new SoundController();
 		_ObPlayers.addListener(new ListChangeListener<Player>() {
 
 			@Override
@@ -115,7 +121,6 @@ public class Controller {
 			}
 		});
 		
-		_SoundControl = new SoundController();
 	}
 
 
@@ -361,5 +366,54 @@ public class Controller {
 	public void PlayerCrashSound() {
 		_SoundControl.PlayCrash();
 		
+	}
+	
+	/**
+	 * Gets all the files in the vehicle location folder
+	 */
+	public ArrayList<String> PopulateVehicleSelector() {
+		BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/properties/PossibleVehicles.txt")));
+		ArrayList<String> _PossibleVehicles = new ArrayList<String>();
+		_PossibleVehicles = new ArrayList<String>();
+		String line = null;
+		do
+		{
+			try {
+				line = br.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(line != null)
+			{
+				_PossibleVehicles.add(line);
+			}
+		} while (line != null);
+		return _PossibleVehicles;
+	}
+	
+	/**
+	 * Populates the map with the files in the folder
+	 */
+	public ArrayList<String> PopulateMapSelector() {
+		
+		ArrayList<String> _PossibleMaps = new ArrayList<String>();
+		BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/properties/PossibleMaps.txt")));
+		
+		_PossibleMaps = new ArrayList<String>();
+		String line = null;
+		do
+		{
+			try {
+				line = br.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(line != null)
+			{
+				_PossibleMaps.add(line);
+			}
+		} while (line != null);
+		
+		return _PossibleMaps;
 	}
 }

@@ -1,7 +1,9 @@
 package com.Viper.Sound;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -78,7 +80,8 @@ public class SoundController {
     {
         try
         {
-        	return AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(f));
+        	InputStream bufferIn = new BufferedInputStream(this.getClass().getResourceAsStream(f));
+        	return AudioSystem.getAudioInputStream(bufferIn);
         } catch (UnsupportedAudioFileException | IOException e)
         {
             e.printStackTrace();

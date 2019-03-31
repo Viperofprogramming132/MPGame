@@ -8,8 +8,11 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -60,7 +63,7 @@ public class Server extends JPanel implements ActionListener{
 	/**
 	 * The array of possible maps that can be chosen from
 	 */
-	private File[] _PossibleMaps;
+	private ArrayList<String> _PossibleMaps;
 	
 	/**
 	 * The currently shown map. This map will be used on creation of the server
@@ -74,7 +77,7 @@ public class Server extends JPanel implements ActionListener{
 	{
 		this.setLayout(null);
 		
-	    PopulateMapSelector();
+	    _PossibleMaps = Controller.GetController().PopulateMapSelector();
 	    
 	    DisplayMap();
 		
@@ -86,13 +89,7 @@ public class Server extends JPanel implements ActionListener{
 		this.setVisible(true);
 	}
 	
-	/**
-	 * Populates the map with the files in the folder
-	 */
-	private void PopulateMapSelector() {
-		File MapFiles = new File(MAPLOCATION);
-		_PossibleMaps = MapFiles.listFiles();
-	}
+
 	
 	/**
 	 * Reads and image from the specified file
@@ -100,9 +97,10 @@ public class Server extends JPanel implements ActionListener{
 	 * @return The image that was read
 	 * @throws IOException If the file fails to read the image due to it not existing or read/write error
 	 */
-	private Image ReadImage(File path) throws IOException
+	private Image ReadImage(String path) throws IOException
 	{
-		BufferedImage img = ImageIO.read(path);
+		path = "/imgs/maptextures/" + path;
+		BufferedImage img = ImageIO.read(this.getClass().getResourceAsStream(path));
 		Image i = new ImageIcon(img).getImage();
 		return i;
 	}
@@ -112,13 +110,13 @@ public class Server extends JPanel implements ActionListener{
 	 */
 	private void DisplayMap()
 	{
-		if (_ShownMap > _PossibleMaps.length - 1)
+		if (_ShownMap > _PossibleMaps.size() - 1)
 		{
 			_ShownMap = 0;
 		}
 		if (_ShownMap < 0)
 		{
-			_ShownMap = _PossibleMaps.length - 1;
+			_ShownMap = _PossibleMaps.size() - 1;
 		}
 		
 		repaint();
@@ -134,11 +132,14 @@ public class Server extends JPanel implements ActionListener{
 		
 		Graphics2D g2d = (Graphics2D) g;
 		
+		Image i = null;
+		
 		try {
-			g2d.drawImage(ReadImage(_PossibleMaps[_ShownMap]), 92, 50, 400, 400, this);
+			i = ReadImage(_PossibleMaps.get(_ShownMap));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		g2d.drawImage(i, 92, 50, 400, 400, this);
 	}
 
 	/**

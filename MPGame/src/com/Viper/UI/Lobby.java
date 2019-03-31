@@ -13,8 +13,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -110,7 +112,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	/**
 	 * Array of file of the possible vehicles
 	 */
-	private File[] _PossibleVehicles;
+	private ArrayList<String> _PossibleVehicles;
 	
 	/**
 	 * The currently shown vehicle when the game starts this is the one that will be chosen
@@ -144,7 +146,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		
 		_Host = host;
 		
-	    PopulateVehicleSelector();
+	    _PossibleVehicles = Controller.GetController().PopulateVehicleSelector();
 	    
 	    DisplayVehicle();
 	    
@@ -199,22 +201,15 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	}
 	
 	/**
-	 * Gets all the files in the vehicle location folder
-	 */
-	private void PopulateVehicleSelector() {
-		File vehicleFiles = new File(VEHICLELOCATION);
-		_PossibleVehicles = vehicleFiles.listFiles();
-	}
-	
-	/**
 	 * Attempts to read an image from the specified file
 	 * @param path The file that the system will attempt to read
 	 * @return The image that is read
 	 * @throws IOException If the file fails to read the image due to it not existing or read/write error
 	 */
-	private Image ReadImage(File path) throws IOException
+	private Image ReadImage(String path) throws IOException
 	{
-		BufferedImage img = ImageIO.read(path);
+		path = "/imgs/vehicles/" + path;
+		BufferedImage img = ImageIO.read(this.getClass().getResourceAsStream(path));
 		Image i = new ImageIcon(img).getImage();
 		return i;
 	}
@@ -225,13 +220,13 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 	private void DisplayVehicle()
 	{
 		//Stop out of range errors
-		if (_ShownVehicles > _PossibleVehicles.length - 1)
+		if (_ShownVehicles > _PossibleVehicles.size() - 1)
 		{
 			_ShownVehicles = 0;
 		}
 		if (_ShownVehicles < 0)
 		{
-			_ShownVehicles = _PossibleVehicles.length - 1;
+			_ShownVehicles = _PossibleVehicles.size() - 1;
 		}
 		
 		Controller.GetController().getClient().getLocalPlayer().setSpriteIndex(_ShownVehicles);
@@ -251,7 +246,7 @@ public class Lobby extends JPanel implements ActionListener, MouseMotionListener
 		
 		Image i = null;
 		try {
-			i = ReadImage(_PossibleVehicles[_ShownVehicles]);
+			i = ReadImage(_PossibleVehicles.get(_ShownVehicles));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
